@@ -1,15 +1,136 @@
 // Mock data for GE Vernova Commerce Intelligence Platform
 // Scope: Salesforce Commerce Cloud (SFCC) + Google Analytics 4 (GA4)
 
-export const kpiData = [
-  { label: "Online Revenue", value: "$142M", change: +12.4, trend: "up" as const, period: "vs last quarter" },
-  { label: "Conversion Rate", value: "3.8%", change: +0.6, trend: "up" as const, period: "vs last quarter" },
-  { label: "Avg Order Value", value: "$4,280", change: +8.2, trend: "up" as const, period: "vs last quarter" },
-  { label: "Cart Abandonment", value: "62.4%", change: -3.1, trend: "down" as const, period: "vs last quarter" },
-  { label: "Sessions (GA4)", value: "1.24M", change: +18.6, trend: "up" as const, period: "vs last quarter" },
-  { label: "Returning Buyers", value: "34.2%", change: +2.8, trend: "up" as const, period: "vs last quarter" },
-  { label: "Catalog Coverage", value: "78%", change: +6.1, trend: "up" as const, period: "of 150K SKUs online" },
-  { label: "ROAS (Paid)", value: "5.2x", change: +0.8, trend: "up" as const, period: "vs last quarter" },
+export interface KpiDetail {
+  label: string;
+  value: string;
+  change: number;
+  trend: "up" | "down";
+  period: string;
+  chartData: { month: string; value: number; previous: number }[];
+  breakdown: { label: string; value: string; pct: number }[];
+  insight: string;
+}
+
+export const kpiData: KpiDetail[] = [
+  {
+    label: "Online Revenue", value: "$142M", change: +12.4, trend: "up", period: "vs last quarter",
+    chartData: [
+      { month: "Jul", value: 108, previous: 96 }, { month: "Aug", value: 112, previous: 100 },
+      { month: "Sep", value: 118, previous: 104 }, { month: "Oct", value: 126, previous: 112 },
+      { month: "Nov", value: 134, previous: 118 }, { month: "Dec", value: 142, previous: 126 },
+    ],
+    breakdown: [
+      { label: "B2B Portal", value: "$98M", pct: 69 },
+      { label: "B2C / Small Business", value: "$32M", pct: 23 },
+      { label: "Marketplace / 3P", value: "$12M", pct: 8 },
+    ],
+    insight: "B2B portal revenue is accelerating fastest at +16% QoQ. Marketplace channel growing at 28% but from a small base. Mobile commerce remains under-indexed at 22% of revenue vs 38% of sessions.",
+  },
+  {
+    label: "Conversion Rate", value: "3.8%", change: +0.6, trend: "up", period: "vs last quarter",
+    chartData: [
+      { month: "Jul", value: 3.2, previous: 2.9 }, { month: "Aug", value: 3.3, previous: 3.0 },
+      { month: "Sep", value: 3.4, previous: 3.1 }, { month: "Oct", value: 3.5, previous: 3.1 },
+      { month: "Nov", value: 3.6, previous: 3.2 }, { month: "Dec", value: 3.8, previous: 3.2 },
+    ],
+    breakdown: [
+      { label: "B2B Portal (logged in)", value: "6.2%", pct: 42 },
+      { label: "Returning Visitors", value: "5.1%", pct: 28 },
+      { label: "New Visitors", value: "1.8%", pct: 18 },
+      { label: "Mobile", value: "2.4%", pct: 12 },
+    ],
+    insight: "B2B portal users convert at 6.2% — nearly 3.5x new visitors. The biggest drag is mobile at 2.4%, flat QoQ despite growing traffic. Fixing mobile checkout could lift blended rate to 4.3%.",
+  },
+  {
+    label: "Avg Order Value", value: "$4,280", change: +8.2, trend: "up", period: "vs last quarter",
+    chartData: [
+      { month: "Jul", value: 3680, previous: 3420 }, { month: "Aug", value: 3780, previous: 3480 },
+      { month: "Sep", value: 3900, previous: 3540 }, { month: "Oct", value: 4020, previous: 3620 },
+      { month: "Nov", value: 4140, previous: 3700 }, { month: "Dec", value: 4280, previous: 3950 },
+    ],
+    breakdown: [
+      { label: "Enterprise (>$500K/yr)", value: "$8,400", pct: 45 },
+      { label: "Mid-market", value: "$4,200", pct: 30 },
+      { label: "SMB", value: "$1,680", pct: 18 },
+      { label: "Long-tail", value: "$420", pct: 7 },
+    ],
+    insight: "AOV growth is driven by Einstein's 'Complete the Set' bundles achieving a 22% attach rate. Enterprise accounts averaging $8,400 per order, primarily from parts bundled with service kits.",
+  },
+  {
+    label: "Cart Abandonment", value: "62.4%", change: -3.1, trend: "down", period: "vs last quarter",
+    chartData: [
+      { month: "Jul", value: 65.5, previous: 68.2 }, { month: "Aug", value: 65.0, previous: 67.8 },
+      { month: "Sep", value: 64.2, previous: 67.1 }, { month: "Oct", value: 63.8, previous: 66.4 },
+      { month: "Nov", value: 63.1, previous: 65.8 }, { month: "Dec", value: 62.4, previous: 65.5 },
+    ],
+    breakdown: [
+      { label: "Shipping cost shock", value: "34%", pct: 34 },
+      { label: "Just researching", value: "22%", pct: 22 },
+      { label: "Payment issues", value: "16%", pct: 16 },
+      { label: "Account required", value: "12%", pct: 12 },
+    ],
+    insight: "Shipping cost reveal at checkout step 3 remains the #1 killer. $88M in carts abandoned monthly. Implementing tiered free shipping thresholds projected to recover $29M annually.",
+  },
+  {
+    label: "Sessions (GA4)", value: "1.24M", change: +18.6, trend: "up", period: "vs last quarter",
+    chartData: [
+      { month: "Jul", value: 920, previous: 780 }, { month: "Aug", value: 960, previous: 810 },
+      { month: "Sep", value: 1020, previous: 840 }, { month: "Oct", value: 1080, previous: 880 },
+      { month: "Nov", value: 1160, previous: 920 }, { month: "Dec", value: 1240, previous: 1045 },
+    ],
+    breakdown: [
+      { label: "Organic Search", value: "412K", pct: 33 },
+      { label: "Paid Search", value: "286K", pct: 23 },
+      { label: "Direct", value: "198K", pct: 16 },
+      { label: "Email / Social", value: "344K", pct: 28 },
+    ],
+    insight: "Organic search traffic up 22% — driven by SEO investment in technical product pages 6 months ago. Top 50 landing pages still growing. Mobile sessions up 28% but desktop still drives 62% of revenue.",
+  },
+  {
+    label: "Returning Buyers", value: "34.2%", change: +2.8, trend: "up", period: "vs last quarter",
+    chartData: [
+      { month: "Jul", value: 31.4, previous: 29.2 }, { month: "Aug", value: 31.8, previous: 29.6 },
+      { month: "Sep", value: 32.4, previous: 30.1 }, { month: "Oct", value: 33.0, previous: 30.8 },
+      { month: "Nov", value: 33.6, previous: 31.2 }, { month: "Dec", value: 34.2, previous: 31.4 },
+    ],
+    breakdown: [
+      { label: "Enterprise CSA holders", value: "94%", pct: 40 },
+      { label: "Mid-market", value: "78%", pct: 30 },
+      { label: "SMB", value: "52%", pct: 20 },
+      { label: "New (last 6mo)", value: "41%", pct: 10 },
+    ],
+    insight: "Enterprise retention is world-class at 94%. Concern area: new account 12-month retention at 41% — onboarding flow needs work. Einstein reorder reminders driving 24% conversion on lapsed accounts.",
+  },
+  {
+    label: "Catalog Coverage", value: "78%", change: +6.1, trend: "up", period: "of 150K SKUs online",
+    chartData: [
+      { month: "Jul", value: 68, previous: 62 }, { month: "Aug", value: 70, previous: 64 },
+      { month: "Sep", value: 72, previous: 65 }, { month: "Oct", value: 74, previous: 66 },
+      { month: "Nov", value: 76, previous: 68 }, { month: "Dec", value: 78, previous: 72 },
+    ],
+    breakdown: [
+      { label: "Fully enriched", value: "98K", pct: 65 },
+      { label: "Basic listing", value: "19K", pct: 13 },
+      { label: "Not yet online", value: "33K", pct: 22 },
+    ],
+    insight: "33K SKUs still not on SFCC — including 8,200 actively searched for on-site (GA4 site search). Each percentage point of coverage added translates to ~$1.2M in incremental quarterly revenue.",
+  },
+  {
+    label: "ROAS (Paid)", value: "5.2x", change: +0.8, trend: "up", period: "vs last quarter",
+    chartData: [
+      { month: "Jul", value: 4.4, previous: 4.0 }, { month: "Aug", value: 4.6, previous: 4.1 },
+      { month: "Sep", value: 4.8, previous: 4.2 }, { month: "Oct", value: 5.0, previous: 4.3 },
+      { month: "Nov", value: 5.1, previous: 4.3 }, { month: "Dec", value: 5.2, previous: 4.4 },
+    ],
+    breakdown: [
+      { label: "Email (Mktg Cloud)", value: "8.4x", pct: 35 },
+      { label: "Retargeting", value: "6.2x", pct: 25 },
+      { label: "Paid Search", value: "5.2x", pct: 25 },
+      { label: "Social/Display", value: "3.1x", pct: 15 },
+    ],
+    insight: "Email is the ROAS champion at 8.4x but gets the smallest budget. Paid search CPCs up 22% YoY — diminishing returns. Shifting 15% of paid search to email nurture could yield +$3.8M at same spend.",
+  },
 ];
 
 export const revenueChartData = [
