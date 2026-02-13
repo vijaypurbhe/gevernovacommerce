@@ -8,21 +8,20 @@ interface Message {
 }
 
 const suggestedQueries = [
-  "How are equipment orders trending this quarter?",
-  "What's the fleet health status?",
-  "Show me the grid modernization pipeline",
-  "Walk me through the supply chain risks",
-  "How's the CSA renewal pipeline looking?",
+  "How is online revenue trending this quarter?",
+  "What's our conversion rate by channel?",
+  "Show me the customer segments",
+  "Walk me through the marketing attribution",
+  "What's driving cart abandonment?",
   "Give me the executive briefing",
 ];
 
 function matchResponse(query: string): string {
   const q = query.toLowerCase();
-  if (q.includes("order") || q.includes("revenue") || q.includes("equipment") || q.includes("backlog")) return aiResponses.revenue;
-  if (q.includes("fleet") || q.includes("turbine") || q.includes("health") || q.includes("outage") || q.includes("anomaly")) return aiResponses.fleet;
-  if (q.includes("grid") || q.includes("ira") || q.includes("transformer") || q.includes("hvdc") || q.includes("electrification")) return aiResponses.grid;
-  if (q.includes("supply") || q.includes("parts") || q.includes("inventory") || q.includes("chain") || q.includes("alloy")) return aiResponses.supply;
-  if (q.includes("csa") || q.includes("renewal") || q.includes("service") || q.includes("retention") || q.includes("contract")) return aiResponses.services;
+  if (q.includes("revenue") || q.includes("order") || q.includes("sales") || q.includes("aov")) return aiResponses.revenue;
+  if (q.includes("conversion") || q.includes("funnel") || q.includes("checkout") || q.includes("cart") || q.includes("abandon")) return aiResponses.conversion;
+  if (q.includes("segment") || q.includes("customer") || q.includes("cohort") || q.includes("retention") || q.includes("ltv")) return aiResponses.segments;
+  if (q.includes("marketing") || q.includes("attribution") || q.includes("channel") || q.includes("roas") || q.includes("paid") || q.includes("seo")) return aiResponses.marketing;
   return aiResponses.default;
 }
 
@@ -114,7 +113,7 @@ const AiCommandInput = () => {
           <Sparkles className="w-4 h-4 text-primary" />
           <h3 className="text-sm font-semibold text-foreground">AI Command Center</h3>
         </div>
-        <p className="text-[10px] text-muted-foreground mt-0.5">Natural language queries across GE Vernova's operational data</p>
+        <p className="text-[10px] text-muted-foreground mt-0.5">Natural language queries across SFCC + GA4 eCommerce data</p>
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0 max-h-[400px]">
@@ -122,7 +121,7 @@ const AiCommandInput = () => {
           <div className="space-y-4 py-4">
             <div className="text-center">
               <div className="text-3xl mb-2">⚡</div>
-              <p className="text-xs text-muted-foreground mb-4">Ask anything about GE Vernova operations</p>
+              <p className="text-xs text-muted-foreground mb-4">Ask anything about GE Vernova eCommerce</p>
             </div>
             <div className="grid grid-cols-1 gap-1.5">
               {suggestedQueries.map((q) => (
@@ -161,7 +160,7 @@ const AiCommandInput = () => {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && sendMessage(input.trim())}
-            placeholder="Ask about orders, fleet, grid, supply chain..."
+            placeholder="Ask about revenue, conversion, marketing, segments..."
             className="flex-1 bg-secondary/50 text-sm text-foreground placeholder:text-muted-foreground px-3 py-2 rounded-lg border border-border/50 focus:outline-none focus:border-primary/50 transition-colors"
           />
           <button

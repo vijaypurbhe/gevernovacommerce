@@ -1,15 +1,15 @@
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { revenueChartData } from "@/data/mockData";
 
-const formatValue = (value: number) => `$${(value / 1000000000).toFixed(1)}B`;
+const formatValue = (value: number) => `$${(value / 1000000).toFixed(0)}M`;
 
 const RevenueChart = () => (
   <div className="glass-card p-5">
     <div className="flex items-center justify-between mb-4">
-      <h3 className="text-sm font-semibold text-foreground">Equipment Orders vs Target</h3>
+      <h3 className="text-sm font-semibold text-foreground">Online Revenue vs Target</h3>
       <div className="flex items-center gap-4 text-[10px] text-muted-foreground">
         <span className="flex items-center gap-1.5">
-          <span className="w-2.5 h-0.5 bg-primary rounded-full" /> Actual Orders
+          <span className="w-2.5 h-0.5 bg-primary rounded-full" /> Actual Revenue
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-2.5 h-0.5 bg-muted-foreground/40 rounded-full" /> Target

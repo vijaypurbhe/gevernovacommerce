@@ -11,8 +11,8 @@ interface KpiTileProps {
 
 const KpiTile = ({ label, value, change, trend, period, index }: KpiTileProps) => {
   const isPositiveTrend = (trend === "up" && change > 0) || (trend === "down" && change < 0);
-  const isNegative = (label === "Cart Abandonment" && change > 0) || (trend === "down" && change < 0);
-  const displayPositive = label === "Cart Abandonment" ? change < 0 : change > 0;
+  const isInverse = label === "Cart Abandonment";
+  const displayPositive = isInverse ? change < 0 : change > 0;
 
   return (
     <div

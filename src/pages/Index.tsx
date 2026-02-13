@@ -29,11 +29,11 @@ const Index = () => {
               <Zap className="w-4 h-4 text-primary" />
             </div>
             <div>
-              <h1 className="text-sm font-bold text-foreground tracking-tight">
-                GE Vernova — Agentic Commerce Intelligence
+            <h1 className="text-sm font-bold text-foreground tracking-tight">
+                GE Vernova — Agentic eCommerce Intelligence
               </h1>
               <p className="text-[10px] text-muted-foreground">
-                Predix APM • Data Cloud • Salesforce CRM • IoT/SCADA • Field Service
+                Salesforce Commerce Cloud • Google Analytics 4 • Data Cloud • Einstein AI • Marketing Cloud
               </p>
             </div>
           </div>
@@ -45,7 +45,7 @@ const Index = () => {
               <span className="text-muted-foreground">• 5 agents active</span>
             </div>
             <div className="text-[10px] text-muted-foreground font-mono hidden lg:block">
-              2M customers • 150K SKUs • 18mo data
+              1.24M sessions • 150K SKUs • 4,200+ accounts
             </div>
             <ThemeToggle />
           </div>
@@ -110,7 +110,7 @@ const Index = () => {
         {/* Footer */}
         <footer className="text-center py-4 border-t border-border/30">
           <p className="text-[10px] text-muted-foreground">
-            Simulated Demo Environment • Salesforce Commerce Cloud + GA4 + Data Cloud + Einstein + Agentforce
+            Simulated Demo Environment • Salesforce Commerce Cloud + Google Analytics 4 + Data Cloud + Einstein AI + Agentforce
           </p>
         </footer>
       </main>
