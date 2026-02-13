@@ -91,7 +91,7 @@ const GovernancePanel = () => {
   const handleReject = (id: string) => setItems((prev) => prev.map((item) => (item.id === id ? { ...item, status: "rejected" as const } : item)));
 
   return (
-    <div className="glass-card p-5 space-y-4">
+    <div className="glass-card p-4 sm:p-5 space-y-4">
       <div>
         <h3 className="text-sm font-semibold text-foreground">Governance & Explainability</h3>
         <p className="text-[10px] text-muted-foreground mt-0.5">Human-in-the-loop approval workflow with full AI decision transparency</p>
@@ -101,21 +101,21 @@ const GovernancePanel = () => {
           const isExpanded = expanded === item.id;
           return (
             <div key={item.id} className={`border rounded-xl transition-all ${item.status === "approved" ? "border-success/20 bg-success/5" : item.status === "rejected" ? "border-destructive/20 bg-destructive/5" : "border-border/50 bg-secondary/20"}`}>
-              <button onClick={() => setExpanded(isExpanded ? null : item.id)} className="w-full flex items-center gap-3 p-3 text-left">
-                <div className="shrink-0">
+              <button onClick={() => setExpanded(isExpanded ? null : item.id)} className="w-full flex items-start sm:items-center gap-3 p-3 text-left">
+                <div className="shrink-0 mt-0.5 sm:mt-0">
                   {item.status === "approved" ? <Check className="w-4 h-4 text-success" /> : item.status === "rejected" ? <AlertTriangle className="w-4 h-4 text-destructive" /> : <Clock className="w-4 h-4 text-warning animate-pulse" />}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-foreground truncate">{item.action}</span>
-                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${riskColors[item.risk]}`}>{item.risk} risk</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                    <span className="text-xs font-semibold text-foreground">{item.action}</span>
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full self-start ${riskColors[item.risk]}`}>{item.risk} risk</span>
                   </div>
                   <div className="text-[10px] text-muted-foreground mt-0.5">{item.agent} • {item.timestamp} • Impact: <span className="text-success font-mono">{item.impact}</span></div>
                 </div>
-                <ChevronRight className={`w-4 h-4 text-muted-foreground transition-transform ${isExpanded ? "rotate-90" : ""}`} />
+                <ChevronRight className={`w-4 h-4 text-muted-foreground transition-transform shrink-0 ${isExpanded ? "rotate-90" : ""}`} />
               </button>
               {isExpanded && (
-                <div className="px-3 pb-3 space-y-3 border-t border-border/30 pt-3 ml-7">
+                <div className="px-3 pb-3 space-y-3 border-t border-border/30 pt-3 sm:ml-7">
                   <div>
                     <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium mb-1.5 flex items-center gap-1"><Eye className="w-3 h-3" /> Decision Reasoning</div>
                     <ol className="space-y-1">{item.reasoning.map((r, i) => (<li key={i} className="text-[10px] text-foreground flex gap-2"><span className="text-muted-foreground font-mono shrink-0">{i + 1}.</span>{r}</li>))}</ol>

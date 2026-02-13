@@ -8,10 +8,10 @@ const ScenarioPanel = ({ scenarios }: { scenarios: Scenario[] }) => {
   const scenario = scenarios[active];
 
   return (
-    <div className="glass-card p-5">
-      <div className="flex items-center justify-between mb-4">
+    <div className="glass-card p-4 sm:p-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
         <h3 className="text-sm font-semibold text-foreground">Closed-Loop Scenario Simulation</h3>
-        <div className="flex gap-1">
+        <div className="flex flex-wrap gap-1">
           {scenarios.map((s, i) => (
             <button
               key={s.id}
@@ -53,7 +53,6 @@ const ScenarioPanel = ({ scenarios }: { scenarios: Scenario[] }) => {
         <span className="font-mono text-sm font-bold text-success">{scenario.impact}</span>
       </div>
 
-      {/* Expand for deep dive */}
       <button
         onClick={() => setExpanded(!expanded)}
         className="w-full mt-3 flex items-center justify-center gap-1 text-[10px] text-primary hover:text-primary/80 transition-colors"
@@ -64,13 +63,11 @@ const ScenarioPanel = ({ scenarios }: { scenarios: Scenario[] }) => {
 
       {expanded && scenario.deepDive && (
         <div className="mt-3 space-y-4 animate-slide-up">
-          {/* Root Cause */}
           <div className="bg-secondary/30 rounded-lg p-3">
             <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium mb-1.5">Root Cause Analysis</div>
             <p className="text-xs text-foreground leading-relaxed">{scenario.deepDive.rootCause}</p>
           </div>
 
-          {/* Data Points */}
           <div>
             <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium mb-1.5">Supporting Data Points</div>
             <div className="space-y-1">
@@ -83,7 +80,6 @@ const ScenarioPanel = ({ scenarios }: { scenarios: Scenario[] }) => {
             </div>
           </div>
 
-          {/* Financial Impact */}
           <div>
             <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium mb-1.5">Financial Impact</div>
             <div className="grid grid-cols-2 gap-2">
@@ -96,7 +92,6 @@ const ScenarioPanel = ({ scenarios }: { scenarios: Scenario[] }) => {
             </div>
           </div>
 
-          {/* Recommendation */}
           <div className="bg-primary/5 border border-primary/20 rounded-lg p-3">
             <div className="text-[10px] text-primary font-medium mb-1">⚡ AI Recommendation</div>
             <p className="text-xs text-foreground leading-relaxed">{scenario.deepDive.recommendation}</p>

@@ -32,8 +32,8 @@ const ForecastingPanel = () => {
   }));
 
   return (
-    <div className="glass-card p-5 space-y-5">
-      <div className="flex items-center justify-between">
+    <div className="glass-card p-4 sm:p-5 space-y-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
         <div>
           <h3 className="text-sm font-semibold text-foreground">Revenue Forecasting & Product Intelligence</h3>
           <p className="text-[10px] text-muted-foreground mt-0.5">Einstein predictive models • 95% confidence interval • SFCC + GA4 data</p>
@@ -49,18 +49,18 @@ const ForecastingPanel = () => {
         <AreaChart data={adjustedData} margin={{ top: 5, right: 5, left: -10, bottom: 0 }}>
           <defs>
             <linearGradient id="confidenceGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="hsl(195, 100%, 50%)" stopOpacity={0.15} />
-              <stop offset="100%" stopColor="hsl(195, 100%, 50%)" stopOpacity={0} />
+              <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.15} />
+              <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 16%, 18%)" vertical={false} />
-          <XAxis dataKey="month" tick={{ fill: "hsl(215, 15%, 55%)", fontSize: 11 }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fill: "hsl(215, 15%, 55%)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}M`} />
-          <Tooltip contentStyle={{ backgroundColor: "hsl(220, 18%, 12%)", border: "1px solid hsl(220, 16%, 22%)", borderRadius: "8px", fontSize: "11px" }} formatter={(v: number) => [`$${v}M`]} />
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+          <XAxis dataKey="month" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} axisLine={false} tickLine={false} />
+          <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}M`} />
+          <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: "11px" }} formatter={(v: number) => [`$${v}M`]} />
           <Area type="monotone" dataKey="upper" stroke="none" fill="url(#confidenceGrad)" />
-          <Area type="monotone" dataKey="lower" stroke="none" fill="hsl(220, 20%, 6%)" />
-          <Line type="monotone" dataKey="actual" stroke="hsl(195, 100%, 50%)" strokeWidth={2} dot={{ r: 3, fill: "hsl(195, 100%, 50%)" }} connectNulls={false} />
-          <Line type="monotone" dataKey="forecast" stroke="hsl(195, 100%, 50%)" strokeWidth={2} strokeDasharray="6 3" dot={{ r: 3, fill: "hsl(195, 80%, 40%)", strokeDasharray: "0" }} connectNulls={false} />
+          <Area type="monotone" dataKey="lower" stroke="none" fill="hsl(var(--background))" />
+          <Line type="monotone" dataKey="actual" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3, fill: "hsl(var(--primary))" }} connectNulls={false} />
+          <Line type="monotone" dataKey="forecast" stroke="hsl(var(--primary))" strokeWidth={2} strokeDasharray="6 3" dot={{ r: 3, fill: "hsl(var(--accent))", strokeDasharray: "0" }} connectNulls={false} />
         </AreaChart>
       </ResponsiveContainer>
 
@@ -71,22 +71,22 @@ const ForecastingPanel = () => {
             <thead>
               <tr className="border-b border-border/50">
                 <th className="text-left py-1.5 text-muted-foreground font-medium">Category</th>
-                <th className="text-right py-1.5 text-muted-foreground font-medium">Buyers</th>
+                <th className="text-right py-1.5 text-muted-foreground font-medium hidden sm:table-cell">Buyers</th>
                 <th className="text-right py-1.5 text-muted-foreground font-medium">Revenue</th>
                 <th className="text-right py-1.5 text-muted-foreground font-medium">Growth</th>
-                <th className="text-right py-1.5 text-muted-foreground font-medium">Churn</th>
-                <th className="text-right py-1.5 text-muted-foreground font-medium">Avg LTV</th>
+                <th className="text-right py-1.5 text-muted-foreground font-medium hidden md:table-cell">Churn</th>
+                <th className="text-right py-1.5 text-muted-foreground font-medium hidden md:table-cell">Avg LTV</th>
               </tr>
             </thead>
             <tbody>
               {segmentData.map((s) => (
                 <tr key={s.segment} className="border-b border-border/30 hover:bg-secondary/30 transition-colors">
                   <td className="py-2 font-medium text-foreground">{s.segment}</td>
-                  <td className="py-2 text-right font-mono text-muted-foreground">{s.customers}</td>
+                  <td className="py-2 text-right font-mono text-muted-foreground hidden sm:table-cell">{s.customers}</td>
                   <td className="py-2 text-right font-mono text-foreground">{s.revenue}</td>
                   <td className={`py-2 text-right font-mono ${s.growth.startsWith("+") ? "text-success" : "text-destructive"}`}>{s.growth}</td>
-                  <td className={`py-2 text-right font-mono ${parseInt(s.churn) > 10 ? "text-warning" : "text-muted-foreground"}`}>{s.churn}</td>
-                  <td className="py-2 text-right font-mono text-foreground">{s.ltv}</td>
+                  <td className={`py-2 text-right font-mono hidden md:table-cell ${parseInt(s.churn) > 10 ? "text-warning" : "text-muted-foreground"}`}>{s.churn}</td>
+                  <td className="py-2 text-right font-mono text-foreground hidden md:table-cell">{s.ltv}</td>
                 </tr>
               ))}
             </tbody>
