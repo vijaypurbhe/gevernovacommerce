@@ -7,32 +7,30 @@ const KpiTile = ({ label, value, change, trend, period, chartData, breakdown, in
   const [open, setOpen] = useState(false);
   const isInverse = label === "Cart Abandonment";
   const displayPositive = isInverse ? change < 0 : change > 0;
-  const contentRef = useRef<HTMLDivElement>(null);
-  const [height, setHeight] = useState(0);
+  const tileRef = useRef<HTMLDivElement>(null);
 
   const barColors = ["hsl(var(--primary))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))"];
 
   useEffect(() => {
-    if (open && contentRef.current) {
-      setHeight(contentRef.current.scrollHeight);
-    } else {
-      setHeight(0);
-    }
+    if (!open) return;
+    const handleEsc = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    const handleClick = (e: MouseEvent) => {
+      if (tileRef.current && !tileRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("keydown", handleEsc);
+    document.addEventListener("mousedown", handleClick);
+    return () => { document.removeEventListener("keydown", handleEsc); document.removeEventListener("mousedown", handleClick); };
   }, [open]);
 
   return (
-    <div className="relative">
+    <div ref={tileRef} className="relative">
       <div
         onClick={() => setOpen(!open)}
         className={`glass-card-hover p-5 flex flex-col gap-2 animate-slide-up cursor-pointer transition-all duration-300 ${open ? "ring-1 ring-primary/40 shadow-lg shadow-primary/10" : ""}`}
         style={{ animationDelay: `${index * 60}ms` }}
       >
-        <span className="text-xs font-medium tracking-wide uppercase text-muted-foreground">
-          {label}
-        </span>
-        <span className="font-mono text-2xl font-bold text-foreground animate-count-up">
-          {value}
-        </span>
+        <span className="text-xs font-medium tracking-wide uppercase text-muted-foreground">{label}</span>
+        <span className="font-mono text-2xl font-bold text-foreground animate-count-up">{value}</span>
         <div className="flex items-center gap-1.5 mt-auto">
           {displayPositive ? (
             <TrendingUp className="w-3.5 h-3.5 text-success" />
@@ -46,28 +44,29 @@ const KpiTile = ({ label, value, change, trend, period, chartData, breakdown, in
         </div>
       </div>
 
-      {/* Expandable detail card */}
-      <div
-        className="overflow-hidden transition-all duration-400 ease-out"
-        style={{ maxHeight: height, opacity: open ? 1 : 0 }}
-      >
-        <div ref={contentRef} className="glass-card mt-2 p-4 space-y-4 border border-primary/20">
-          {/* Header row */}
+      {/* Popover card anchored to tile */}
+      {open && (
+        <div
+          className="absolute top-0 left-0 z-50 w-[340px] glass-card border border-primary/20 shadow-2xl shadow-primary/10 p-4 space-y-3 animate-scale-in origin-top-left"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-foreground">{label} Detail</span>
+              <span className="text-xs font-semibold text-foreground">{label}</span>
+              <span className="font-mono text-lg font-bold text-foreground">{value}</span>
               <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${displayPositive ? "text-success bg-success/10" : "text-destructive bg-destructive/10"}`}>
                 {change > 0 ? "+" : ""}{change}%
               </span>
             </div>
-            <button onClick={(e) => { e.stopPropagation(); setOpen(false); }} className="text-muted-foreground hover:text-foreground transition-colors">
+            <button onClick={() => setOpen(false)} className="text-muted-foreground hover:text-foreground transition-colors">
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
 
           {/* Trend Chart */}
           <div>
-            <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium mb-1.5">6-Month Trend</div>
+            <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium mb-1">6-Month Trend</div>
             <div className="h-28 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
@@ -100,7 +99,7 @@ const KpiTile = ({ label, value, change, trend, period, chartData, breakdown, in
                   <div className="flex-1 h-4 bg-secondary/50 rounded-full overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-700"
-                      style={{ width: open ? `${item.pct}%` : "0%", background: barColors[i % barColors.length], transitionDelay: `${i * 80}ms` }}
+                      style={{ width: `${item.pct}%`, background: barColors[i % barColors.length], transitionDelay: `${i * 80}ms` }}
                     />
                   </div>
                   <div className="w-12 text-right text-[10px] font-mono font-medium text-foreground">{item.value}</div>
@@ -115,7 +114,7 @@ const KpiTile = ({ label, value, change, trend, period, chartData, breakdown, in
             <p className="text-[10px] text-foreground leading-relaxed">{insight}</p>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
