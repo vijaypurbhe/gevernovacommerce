@@ -13,6 +13,7 @@ import ForecastingPanel from "@/components/ForecastingPanel";
 import { StateToggle, CurrentVsFuture } from "@/components/StateToggle";
 import DataLineage from "@/components/DataLineage";
 import StreamingAlerts from "@/components/StreamingAlerts";
+import ThemeToggle from "@/components/ThemeToggle";
 import { kpiData, agents, scenarios } from "@/data/mockData";
 
 const Index = () => {
@@ -46,14 +47,12 @@ const Index = () => {
             <div className="text-[10px] text-muted-foreground font-mono hidden lg:block">
               2M customers • 150K SKUs • 18mo data
             </div>
+            <ThemeToggle />
           </div>
         </div>
       </header>
 
       <main className="max-w-[1600px] mx-auto px-6 py-6 space-y-6">
-        {/* Streaming Alerts */}
-        <StreamingAlerts />
-
         {/* KPI Grid */}
         <section className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
           {kpiData.map((kpi, i) => (
@@ -70,6 +69,9 @@ const Index = () => {
           <AiCommandInput />
         </section>
 
+        {/* Streaming Alerts - after stats and graph */}
+        <StreamingAlerts />
+
         {/* Forecasting + Segmentation */}
         <ForecastingPanel />
 
@@ -78,6 +80,7 @@ const Index = () => {
           <div className="flex items-center gap-2 mb-3">
             <h2 className="text-sm font-bold text-foreground">AI Agent Layer</h2>
             <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">Agentforce</span>
+            <span className="text-[10px] text-muted-foreground ml-1">Click "Chat" to interact with any agent</span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
             {agents.map((agent) => (

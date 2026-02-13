@@ -6,6 +6,65 @@
 
 @layer base {
   :root {
+    --background: 220 14% 96%;
+    --foreground: 220 20% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 12%;
+
+    --primary: 195 100% 40%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 90%;
+    --secondary-foreground: 220 20% 20%;
+
+    --muted: 220 14% 92%;
+    --muted-foreground: 215 15% 45%;
+
+    --accent: 195 80% 35%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --warning: 38 95% 50%;
+    --warning-foreground: 220 20% 6%;
+
+    --success: 152 70% 38%;
+    --success-foreground: 0 0% 100%;
+
+    --border: 220 14% 86%;
+    --input: 220 14% 86%;
+    --ring: 195 100% 40%;
+
+    --radius: 0.75rem;
+
+    --chart-1: 195 100% 40%;
+    --chart-2: 152 70% 38%;
+    --chart-3: 38 95% 50%;
+    --chart-4: 280 70% 55%;
+    --chart-5: 0 72% 51%;
+
+    --sidebar-background: 220 14% 94%;
+    --sidebar-foreground: 220 20% 20%;
+    --sidebar-primary: 195 100% 40%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 90%;
+    --sidebar-accent-foreground: 220 20% 20%;
+    --sidebar-border: 220 14% 86%;
+    --sidebar-ring: 195 100% 40%;
+
+    --glass: 0 0% 100% / 0.7;
+    --glass-border: 220 14% 86%;
+    --glow-primary: 195 100% 40% / 0.1;
+    --glow-warning: 38 95% 50% / 0.1;
+    --glow-success: 152 70% 38% / 0.1;
+  }
+
+  .dark {
     --background: 220 20% 6%;
     --foreground: 210 20% 92%;
 
@@ -39,8 +98,6 @@
     --border: 220 16% 18%;
     --input: 220 16% 18%;
     --ring: 195 100% 50%;
-
-    --radius: 0.75rem;
 
     --chart-1: 195 100% 50%;
     --chart-2: 152 70% 45%;
@@ -83,6 +140,10 @@
 
   .glass-card {
     @apply bg-card/60 backdrop-blur-xl border border-border/50 rounded-xl;
+  }
+
+  .dark .glass-card {
+    @apply bg-card/60;
   }
 
   .glass-card-hover {
