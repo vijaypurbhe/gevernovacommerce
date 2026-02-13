@@ -31,13 +31,13 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border/50 bg-card/40 backdrop-blur-lg sticky top-0 z-50">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 xl:px-10 py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
               <Zap className="w-4 h-4 text-primary" />
             </div>
             <div className="min-w-0">
-              <h1 className="text-xs sm:text-sm font-bold text-foreground tracking-tight truncate">
+              <h1 className="text-xs sm:text-sm xl:text-base font-bold text-foreground tracking-tight truncate">
                 GE Vernova — Agentic eCommerce Intelligence
               </h1>
               <p className="text-[10px] text-muted-foreground truncate hidden sm:block">
@@ -66,16 +66,16 @@ const Index = () => {
         </div>
       </header>
 
-      <main className="max-w-[1600px] mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
+      <main className="max-w-[1920px] mx-auto px-4 sm:px-6 xl:px-10 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* KPI Grid */}
-        <section className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 sm:gap-3">
+        <section className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 sm:gap-3 xl:gap-4">
           {kpiData.map((kpi, i) => (
             <KpiTile key={kpi.label} {...kpi} index={i} />
           ))}
         </section>
 
         {/* Charts + AI Command */}
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-4 xl:gap-6">
           <div className="lg:col-span-2 space-y-4">
             <RevenueChart />
             <ChannelTable />
@@ -92,11 +92,11 @@ const Index = () => {
         {/* Agent Cards */}
         <section>
           <div className="flex items-center gap-2 mb-3 flex-wrap">
-            <h2 className="text-sm font-bold text-foreground">AI Agent Layer</h2>
-            <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">Agentforce</span>
-            <span className="text-[10px] text-muted-foreground ml-1 hidden sm:inline">Click "Chat" to interact with any agent</span>
+            <h2 className="text-sm xl:text-base font-bold text-foreground">AI Agent Layer</h2>
+            <span className="text-[10px] xl:text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">Agentforce</span>
+            <span className="text-[10px] xl:text-xs text-muted-foreground ml-1 hidden sm:inline">Click "Chat" to interact with any agent</span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 xl:gap-4">
             {agents.map((agent) => (
               <AgentCard
                 key={agent.id}
@@ -108,7 +108,7 @@ const Index = () => {
         </section>
 
         {/* Scenarios + Customer Profile */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-4 xl:gap-6">
           <ScenarioPanel scenarios={scenarios} />
           <CustomerProfile />
         </section>
@@ -117,7 +117,7 @@ const Index = () => {
         <BudgetOptimization />
 
         {/* Data Lineage + Current vs Future */}
-        <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-4 xl:gap-6">
           <DataLineage />
           <CurrentVsFuture state={viewState} />
         </section>
