@@ -1,16 +1,16 @@
 import { channelData } from "@/data/mockData";
 
 const ChannelTable = () => (
-  <div className="glass-card p-5">
-    <h3 className="text-sm font-semibold text-foreground mb-4">Channel Performance (GA4)</h3>
+  <div className="glass-card p-5 xl:p-6">
+    <h3 className="text-sm xl:text-base font-semibold text-foreground mb-4">Channel Performance (GA4)</h3>
     <div className="overflow-x-auto">
-      <table className="w-full text-xs">
+      <table className="w-full text-xs xl:text-sm">
         <thead>
           <tr className="border-b border-border/50">
-            <th className="text-left py-2 text-muted-foreground font-medium">Channel</th>
-            <th className="text-right py-2 text-muted-foreground font-medium">Revenue</th>
-            <th className="text-right py-2 text-muted-foreground font-medium">Sessions</th>
-            <th className="text-right py-2 text-muted-foreground font-medium">Conv Rate</th>
+            <th className="text-left py-2 xl:py-3 text-muted-foreground font-medium">Channel</th>
+            <th className="text-right py-2 xl:py-3 text-muted-foreground font-medium">Revenue</th>
+            <th className="text-right py-2 xl:py-3 text-muted-foreground font-medium">Sessions</th>
+            <th className="text-right py-2 xl:py-3 text-muted-foreground font-medium">Conv Rate</th>
           </tr>
         </thead>
         <tbody>

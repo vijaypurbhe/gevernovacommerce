@@ -26,21 +26,21 @@ const KpiTile = ({ label, value, change, trend, period, chartData, breakdown, in
     <div ref={tileRef} className="relative">
       <div
         onClick={() => setOpen(!open)}
-        className={`glass-card-hover p-3 sm:p-5 flex flex-col gap-1.5 sm:gap-2 animate-slide-up cursor-pointer transition-all duration-300 ${open ? "ring-1 ring-primary/40 shadow-lg shadow-primary/10" : ""}`}
+        className={`glass-card-hover p-3 sm:p-5 xl:p-6 flex flex-col gap-1.5 sm:gap-2 animate-slide-up cursor-pointer transition-all duration-300 ${open ? "ring-1 ring-primary/40 shadow-lg shadow-primary/10" : ""}`}
         style={{ animationDelay: `${index * 60}ms` }}
       >
-        <span className="text-[10px] sm:text-xs font-medium tracking-wide uppercase text-muted-foreground">{label}</span>
-        <span className="font-mono text-lg sm:text-2xl font-bold text-foreground animate-count-up">{value}</span>
+        <span className="text-[10px] sm:text-xs xl:text-sm font-medium tracking-wide uppercase text-muted-foreground">{label}</span>
+        <span className="font-mono text-lg sm:text-2xl xl:text-3xl font-bold text-foreground animate-count-up">{value}</span>
         <div className="flex items-center gap-1.5 mt-auto">
           {displayPositive ? (
-            <TrendingUp className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-success" />
+            <TrendingUp className="w-3 sm:w-3.5 xl:w-4 h-3 sm:h-3.5 xl:h-4 text-success" />
           ) : (
-            <TrendingDown className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-destructive" />
+            <TrendingDown className="w-3 sm:w-3.5 xl:w-4 h-3 sm:h-3.5 xl:h-4 text-destructive" />
           )}
-          <span className={`text-[10px] sm:text-xs font-mono font-medium ${displayPositive ? "text-success" : "text-destructive"}`}>
+          <span className={`text-[10px] sm:text-xs xl:text-sm font-mono font-medium ${displayPositive ? "text-success" : "text-destructive"}`}>
             {change > 0 ? "+" : ""}{change}%
           </span>
-          <span className="text-[10px] sm:text-xs text-muted-foreground hidden sm:inline">{period}</span>
+          <span className="text-[10px] sm:text-xs xl:text-sm text-muted-foreground hidden sm:inline">{period}</span>
         </div>
       </div>
 
