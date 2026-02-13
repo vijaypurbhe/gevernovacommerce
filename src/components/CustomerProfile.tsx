@@ -7,7 +7,7 @@ const CustomerProfile = () => {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="glass-card p-5">
+    <div className="glass-card p-4 sm:p-5">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-foreground">360° Account Intelligence</h3>
         <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">{p.segment}</span>
@@ -21,7 +21,7 @@ const CustomerProfile = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-2 mb-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
         {[
           { label: "Contract Value", value: p.contractValue },
           { label: "Predicted LTV", value: p.predictedLifetimeValue },
@@ -57,7 +57,6 @@ const CustomerProfile = () => {
         <div className="text-xs text-foreground">{p.nextBestAction}</div>
       </div>
 
-      {/* Expand for full profile */}
       <button
         onClick={() => setExpanded(!expanded)}
         className="w-full mt-3 flex items-center justify-center gap-1 text-[10px] text-primary hover:text-primary/80 transition-colors"
@@ -68,13 +67,11 @@ const CustomerProfile = () => {
 
       {expanded && (
         <div className="mt-3 space-y-4 animate-slide-up">
-          {/* AI Summary */}
           <div className="bg-secondary/30 rounded-lg p-3">
             <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium mb-1.5">AI-Generated Account Summary</div>
             <p className="text-xs text-foreground leading-relaxed">{p.aiSummary}</p>
           </div>
 
-          {/* Fleet Details */}
           <div>
             <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium mb-1.5">Installed Fleet</div>
             <div className="text-xs text-foreground mb-2">{p.fleet}</div>
@@ -88,7 +85,6 @@ const CustomerProfile = () => {
             </div>
           </div>
 
-          {/* Digital Products */}
           <div>
             <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium mb-1.5">Digital Products Deployed</div>
             <div className="flex flex-wrap gap-1.5">
@@ -98,7 +94,6 @@ const CustomerProfile = () => {
             </div>
           </div>
 
-          {/* Cross-Cloud Activation */}
           <div className="bg-primary/5 border border-primary/20 rounded-lg p-3">
             <div className="text-[10px] text-primary font-medium mb-1.5">Cross-Platform Activation Simulation</div>
             <div className="space-y-1.5 text-[10px]">

@@ -31,38 +31,44 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border/50 bg-card/40 backdrop-blur-lg sticky top-0 z-50">
-        <div className="max-w-[1600px] mx-auto px-6 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
               <Zap className="w-4 h-4 text-primary" />
             </div>
-            <div>
-            <h1 className="text-sm font-bold text-foreground tracking-tight">
+            <div className="min-w-0">
+              <h1 className="text-xs sm:text-sm font-bold text-foreground tracking-tight truncate">
                 GE Vernova — Agentic eCommerce Intelligence
               </h1>
-              <p className="text-[10px] text-muted-foreground">
+              <p className="text-[10px] text-muted-foreground truncate hidden sm:block">
                 Salesforce Commerce Cloud • Google Analytics 4 • Data Cloud • Einstein AI • Marketing Cloud
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <StateToggle state={viewState} onChange={setViewState} />
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+            <div className="hidden md:block">
+              <StateToggle state={viewState} onChange={setViewState} />
+            </div>
             <div className="flex items-center gap-1.5 text-[10px]">
               <Activity className="w-3 h-3 text-success animate-pulse" />
               <span className="text-success font-medium">Live</span>
-              <span className="text-muted-foreground">• 5 agents active</span>
+              <span className="text-muted-foreground hidden sm:inline">• 5 agents active</span>
             </div>
-            <div className="text-[10px] text-muted-foreground font-mono hidden lg:block">
+            <div className="text-[10px] text-muted-foreground font-mono hidden xl:block">
               1.24M sessions • 150K SKUs • 4,200+ accounts
             </div>
             <ThemeToggle />
           </div>
         </div>
+        {/* Mobile state toggle */}
+        <div className="md:hidden px-4 pb-2">
+          <StateToggle state={viewState} onChange={setViewState} />
+        </div>
       </header>
 
-      <main className="max-w-[1600px] mx-auto px-6 py-6 space-y-6">
+      <main className="max-w-[1600px] mx-auto px-4 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6">
         {/* KPI Grid */}
-        <section className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+        <section className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 sm:gap-3">
           {kpiData.map((kpi, i) => (
             <KpiTile key={kpi.label} {...kpi} index={i} />
           ))}
@@ -77,20 +83,20 @@ const Index = () => {
           <AiCommandInput />
         </section>
 
-        {/* Streaming Alerts - after stats and graph */}
+        {/* Streaming Alerts */}
         <StreamingAlerts onAlertClick={handleAlertClick} />
 
-        {/* Forecasting + Segmentation */}
+        {/* Forecasting */}
         <ForecastingPanel />
 
         {/* Agent Cards */}
         <section>
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
             <h2 className="text-sm font-bold text-foreground">AI Agent Layer</h2>
             <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">Agentforce</span>
-            <span className="text-[10px] text-muted-foreground ml-1">Click "Chat" to interact with any agent</span>
+            <span className="text-[10px] text-muted-foreground ml-1 hidden sm:inline">Click "Chat" to interact with any agent</span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
             {agents.map((agent) => (
               <AgentCard
                 key={agent.id}

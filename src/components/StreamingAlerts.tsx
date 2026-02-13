@@ -51,19 +51,19 @@ const StreamingAlerts = ({ onAlertClick }: StreamingAlertsProps) => {
         <div
           key={alert.id}
           onClick={() => onAlertClick?.(alert.agentId, alert.message)}
-          className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border animate-slide-up cursor-pointer transition-all hover:shadow-md ${alert.severity === "critical" ? "bg-destructive/5 border-destructive/20 hover:bg-destructive/10" : "bg-warning/5 border-warning/20 hover:bg-warning/10"}`}
+          className={`flex items-start sm:items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2.5 rounded-xl border animate-slide-up cursor-pointer transition-all hover:shadow-md ${alert.severity === "critical" ? "bg-destructive/5 border-destructive/20 hover:bg-destructive/10" : "bg-warning/5 border-warning/20 hover:bg-warning/10"}`}
           style={{ animationDelay: `${i * 100}ms` }}
         >
-          <AlertTriangle className={`w-3.5 h-3.5 shrink-0 ${alert.severity === "critical" ? "text-destructive" : "text-warning"} animate-stream`} />
+          <AlertTriangle className={`w-3.5 h-3.5 shrink-0 mt-0.5 sm:mt-0 ${alert.severity === "critical" ? "text-destructive" : "text-warning"} animate-stream`} />
           <div className="flex-1 min-w-0">
             <span className="text-[10px] text-muted-foreground">{alert.agent}</span>
-            <span className="text-[10px] text-muted-foreground mx-1.5">•</span>
-            <span className="text-xs text-foreground">{alert.message}</span>
+            <span className="text-[10px] text-muted-foreground mx-1.5 hidden sm:inline">•</span>
+            <span className="text-xs text-foreground block sm:inline">{alert.message}</span>
           </div>
           <button className="text-[10px] text-primary hover:text-primary/80 transition-colors shrink-0 flex items-center gap-1 font-medium">
-            <MessageSquare className="w-3 h-3" /> Investigate
+            <MessageSquare className="w-3 h-3" /> <span className="hidden sm:inline">Investigate</span>
           </button>
-          <span className="text-[9px] text-muted-foreground shrink-0">{alert.time}</span>
+          <span className="text-[9px] text-muted-foreground shrink-0 hidden sm:block">{alert.time}</span>
           <button onClick={(e) => dismiss(alert.id, e)} className="text-muted-foreground hover:text-foreground transition-colors shrink-0"><X className="w-3 h-3" /></button>
         </div>
       ))}

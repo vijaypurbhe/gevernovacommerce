@@ -26,28 +26,28 @@ const KpiTile = ({ label, value, change, trend, period, chartData, breakdown, in
     <div ref={tileRef} className="relative">
       <div
         onClick={() => setOpen(!open)}
-        className={`glass-card-hover p-5 flex flex-col gap-2 animate-slide-up cursor-pointer transition-all duration-300 ${open ? "ring-1 ring-primary/40 shadow-lg shadow-primary/10" : ""}`}
+        className={`glass-card-hover p-3 sm:p-5 flex flex-col gap-1.5 sm:gap-2 animate-slide-up cursor-pointer transition-all duration-300 ${open ? "ring-1 ring-primary/40 shadow-lg shadow-primary/10" : ""}`}
         style={{ animationDelay: `${index * 60}ms` }}
       >
-        <span className="text-xs font-medium tracking-wide uppercase text-muted-foreground">{label}</span>
-        <span className="font-mono text-2xl font-bold text-foreground animate-count-up">{value}</span>
+        <span className="text-[10px] sm:text-xs font-medium tracking-wide uppercase text-muted-foreground">{label}</span>
+        <span className="font-mono text-lg sm:text-2xl font-bold text-foreground animate-count-up">{value}</span>
         <div className="flex items-center gap-1.5 mt-auto">
           {displayPositive ? (
-            <TrendingUp className="w-3.5 h-3.5 text-success" />
+            <TrendingUp className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-success" />
           ) : (
-            <TrendingDown className="w-3.5 h-3.5 text-destructive" />
+            <TrendingDown className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-destructive" />
           )}
-          <span className={`text-xs font-mono font-medium ${displayPositive ? "text-success" : "text-destructive"}`}>
+          <span className={`text-[10px] sm:text-xs font-mono font-medium ${displayPositive ? "text-success" : "text-destructive"}`}>
             {change > 0 ? "+" : ""}{change}%
           </span>
-          <span className="text-xs text-muted-foreground">{period}</span>
+          <span className="text-[10px] sm:text-xs text-muted-foreground hidden sm:inline">{period}</span>
         </div>
       </div>
 
       {/* Popover card anchored to tile */}
       {open && (
         <div
-          className="absolute top-0 left-0 z-50 w-[340px] glass-card border border-primary/20 shadow-2xl shadow-primary/10 p-4 space-y-3 animate-scale-in origin-top-left"
+          className="absolute top-0 left-0 z-50 w-[280px] sm:w-[340px] glass-card border border-primary/20 shadow-2xl shadow-primary/10 p-3 sm:p-4 space-y-3 animate-scale-in origin-top-left"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
