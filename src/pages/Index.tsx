@@ -30,10 +30,10 @@ const Index = () => {
             </div>
             <div>
               <h1 className="text-sm font-bold text-foreground tracking-tight">
-                Agentic Commerce Intelligence
+                GE Vernova — Agentic Commerce Intelligence
               </h1>
               <p className="text-[10px] text-muted-foreground">
-                SFCC • Data Cloud • GA4 • BigQuery • Marketing Cloud • CRM
+                Predix APM • Data Cloud • Salesforce CRM • IoT/SCADA • Field Service
               </p>
             </div>
           </div>
