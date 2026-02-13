@@ -14,22 +14,45 @@ interface Message {
   content: string;
 }
 
-function streamText(
+// Realistic streaming with variable speed and thinking pauses
+function streamRealistic(
   text: string,
   onChunk: (partial: string) => void,
   onDone: () => void
 ) {
   let i = 0;
-  const interval = setInterval(() => {
-    i += Math.floor(Math.random() * 6) + 3;
+  let started = false;
+
+  const tick = () => {
+    if (!started) {
+      started = true;
+      setTimeout(tick, 300 + Math.random() * 500);
+      return;
+    }
+
+    const char = text[i] || "";
+    let chunkSize = Math.floor(Math.random() * 5) + 2;
+    if (char === "\n" || char === "." || char === ":" || char === "|") chunkSize = 1;
+
+    i += chunkSize;
     if (i >= text.length) {
       i = text.length;
-      clearInterval(interval);
+      onChunk(text);
       onDone();
+      return;
     }
+
     onChunk(text.slice(0, i));
-  }, 12);
-  return () => clearInterval(interval);
+
+    let delay = 8 + Math.random() * 12;
+    if (text[i - 1] === "\n" && text[i] === "\n") delay = 80 + Math.random() * 120;
+    else if (text[i - 1] === "\n") delay = 30 + Math.random() * 50;
+    else if (text[i - 1] === "." || text[i - 1] === ":") delay = 20 + Math.random() * 30;
+
+    setTimeout(tick, delay);
+  };
+
+  tick();
 }
 
 const AgentCard = ({ agent }: { agent: Agent }) => {
@@ -40,70 +63,71 @@ const AgentCard = ({ agent }: { agent: Agent }) => {
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const cleanupRef = useRef<(() => void) | null>(null);
   const config = statusConfig[agent.status];
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
-  // Send greeting when chat opens
   useEffect(() => {
     if (chatOpen && messages.length === 0) {
       const conv = agentConversations[agent.id];
       if (!conv) return;
       setStreaming(true);
-      cleanupRef.current = streamText(
-        conv.greeting,
-        (partial) => {
-          setMessages([{ role: "assistant", content: partial }]);
-        },
-        () => setStreaming(false)
-      );
+      streamRealistic(conv.greeting, (partial) => {
+        setMessages([{ role: "assistant", content: partial }]);
+      }, () => setStreaming(false));
     }
-    return () => cleanupRef.current?.();
   }, [chatOpen]);
 
   const handleExecute = () => {
     setExecuting(true);
-    setTimeout(() => {
-      setExecuting(false);
-      setExecuted(true);
-    }, 2000);
+    setTimeout(() => { setExecuting(false); setExecuted(true); }, 2000);
   };
 
   const handleSend = () => {
     if (!input.trim() || streaming) return;
     const userMsg = input.trim().toLowerCase();
+    const displayMsg = input.trim();
     setInput("");
-    setMessages((prev) => [...prev, { role: "user", content: input.trim() }]);
+    setMessages((prev) => [...prev, { role: "user", content: displayMsg }]);
     setStreaming(true);
 
     const conv = agentConversations[agent.id];
-    // Match keywords to responses
-    let response = conv?.responses.default || "I'm analyzing your query. Based on my current monitoring data, I recommend reviewing the executive dashboard for the latest insights.";
+    let response = conv?.responses.default || "I'm analyzing your request across our operational data. Let me pull the relevant information together.";
     if (conv) {
       for (const [key, val] of Object.entries(conv.responses)) {
-        if (key !== "default" && userMsg.includes(key)) {
-          response = val;
-          break;
-        }
+        if (key !== "default" && userMsg.includes(key)) { response = val; break; }
       }
     }
 
-    cleanupRef.current = streamText(
-      response,
-      (partial) => {
-        setMessages((prev) => {
-          const last = prev[prev.length - 1];
-          if (last?.role === "assistant" && prev.length > 1 && prev[prev.length - 2]?.role === "user") {
-            return prev.map((m, idx) => (idx === prev.length - 1 ? { ...m, content: partial } : m));
-          }
-          return [...prev, { role: "assistant", content: partial }];
-        });
-      },
-      () => setStreaming(false)
-    );
+    streamRealistic(response, (partial) => {
+      setMessages((prev) => {
+        const last = prev[prev.length - 1];
+        if (last?.role === "assistant" && prev.length > 1 && prev[prev.length - 2]?.role === "user") {
+          return prev.map((m, idx) => (idx === prev.length - 1 ? { ...m, content: partial } : m));
+        }
+        return [...prev, { role: "assistant", content: partial }];
+      });
+    }, () => setStreaming(false));
+  };
+
+  const sendChip = (key: string) => {
+    const conv = agentConversations[agent.id];
+    const response = conv?.responses[key] || conv?.responses.default || "";
+    const label = key.charAt(0).toUpperCase() + key.slice(1);
+    setMessages((prev) => [...prev, { role: "user", content: label }]);
+    setStreaming(true);
+    setInput("");
+    streamRealistic(response, (partial) => {
+      setMessages((prev) => {
+        const last = prev[prev.length - 1];
+        if (last?.role === "assistant" && prev[prev.length - 2]?.role === "user") {
+          return prev.map((m, idx) => (idx === prev.length - 1 ? { ...m, content: partial } : m));
+        }
+        return [...prev, { role: "assistant", content: partial }];
+      });
+    }, () => setStreaming(false));
   };
 
   return (
@@ -119,156 +143,72 @@ const AgentCard = ({ agent }: { agent: Agent }) => {
             {config.label}
           </span>
         </div>
-
         <p className="text-xs text-muted-foreground leading-relaxed">{agent.insight}</p>
-
         <div className="flex items-center gap-3 text-xs">
           <span className="text-muted-foreground">Confidence</span>
           <div className="flex-1 h-1.5 bg-secondary rounded-full overflow-hidden">
-            <div
-              className="h-full bg-primary rounded-full transition-all duration-1000"
-              style={{ width: `${agent.confidence}%` }}
-            />
+            <div className="h-full bg-primary rounded-full transition-all duration-1000" style={{ width: `${agent.confidence}%` }} />
           </div>
           <span className="font-mono text-foreground font-medium">{agent.confidence}%</span>
         </div>
-
         <div className="bg-secondary/50 rounded-lg p-3 text-xs">
           <div className="text-muted-foreground mb-1">Recommended Action</div>
           <div className="text-foreground font-medium">{agent.action}</div>
         </div>
-
         <div className="flex items-center justify-between mt-auto">
           <span className="text-xs">
             <span className="text-muted-foreground">Impact: </span>
             <span className="font-mono font-semibold text-success">{agent.impact}</span>
           </span>
           <div className="flex items-center gap-1.5">
-            <button
-              onClick={() => setChatOpen(true)}
-              className="text-[11px] font-medium px-2.5 py-1.5 rounded-md bg-secondary/60 text-muted-foreground hover:text-foreground hover:bg-secondary transition-all flex items-center gap-1"
-            >
-              <MessageSquare className="w-3 h-3" />
-              Chat
+            <button onClick={() => setChatOpen(true)} className="text-[11px] font-medium px-2.5 py-1.5 rounded-md bg-secondary/60 text-muted-foreground hover:text-foreground hover:bg-secondary transition-all flex items-center gap-1">
+              <MessageSquare className="w-3 h-3" /> Chat
             </button>
-            <button
-              onClick={handleExecute}
-              disabled={executing || executed}
-              className={`text-[11px] font-medium px-3 py-1.5 rounded-md transition-all ${
-                executed
-                  ? "bg-success/20 text-success cursor-default"
-                  : executing
-                  ? "bg-primary/20 text-primary animate-pulse cursor-wait"
-                  : "bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer"
-              }`}
-            >
+            <button onClick={handleExecute} disabled={executing || executed} className={`text-[11px] font-medium px-3 py-1.5 rounded-md transition-all ${executed ? "bg-success/20 text-success cursor-default" : executing ? "bg-primary/20 text-primary animate-pulse cursor-wait" : "bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer"}`}>
               {executed ? "✓ Executed" : executing ? "Executing..." : "Execute →"}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Chat Modal */}
       {chatOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm animate-slide-up">
           <div className="w-full max-w-lg mx-4 glass-card border border-border/50 flex flex-col max-h-[80vh] shadow-2xl">
-            {/* Header */}
             <div className="flex items-center justify-between px-5 py-3 border-b border-border/50">
               <div className="flex items-center gap-2">
                 <span className="text-lg">{agent.icon}</span>
                 <div>
                   <h3 className="text-sm font-semibold text-foreground">{agent.name}</h3>
-                  <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full ${config.bgClass}`}>
-                    {config.label} • {agent.confidence}% confidence
-                  </span>
+                  <span className={`text-[9px] font-medium px-1.5 py-0.5 rounded-full ${config.bgClass}`}>{config.label} • {agent.confidence}% confidence</span>
                 </div>
               </div>
-              <button
-                onClick={() => { setChatOpen(false); cleanupRef.current?.(); }}
-                className="text-muted-foreground hover:text-foreground transition-colors p-1"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <button onClick={() => setChatOpen(false)} className="text-muted-foreground hover:text-foreground transition-colors p-1"><X className="w-4 h-4" /></button>
             </div>
-
-            {/* Messages */}
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
               {messages.map((msg, i) => (
                 <div key={i} className={`text-xs leading-relaxed ${msg.role === "user" ? "text-right" : ""}`}>
                   {msg.role === "user" ? (
-                    <span className="inline-block bg-primary/10 text-primary px-3 py-2 rounded-lg max-w-[85%] text-left">
-                      {msg.content}
-                    </span>
+                    <span className="inline-block bg-primary/10 text-primary px-3 py-2 rounded-lg max-w-[85%] text-left">{msg.content}</span>
                   ) : (
                     <div className="bg-secondary/50 rounded-lg p-3 whitespace-pre-wrap text-foreground">
                       {msg.content}
-                      {streaming && i === messages.length - 1 && (
-                        <span className="inline-block w-1.5 h-3.5 bg-primary ml-0.5 animate-pulse" />
-                      )}
+                      {streaming && i === messages.length - 1 && <span className="inline-block w-1.5 h-3.5 bg-primary ml-0.5 animate-pulse" />}
                     </div>
                   )}
                 </div>
               ))}
             </div>
-
-            {/* Suggestion Chips */}
             {messages.length <= 1 && !streaming && (
               <div className="px-4 pb-2 flex flex-wrap gap-1.5">
-                {Object.keys(agentConversations[agent.id]?.responses || {})
-                  .filter((k) => k !== "default")
-                  .map((key) => (
-                    <button
-                      key={key}
-                      onClick={() => {
-                        setInput(key.charAt(0).toUpperCase() + key.slice(1));
-                        setTimeout(() => {
-                          setInput(key.charAt(0).toUpperCase() + key.slice(1));
-                          // Auto-send
-                          const conv = agentConversations[agent.id];
-                          const response = conv?.responses[key] || conv?.responses.default || "";
-                          setMessages((prev) => [...prev, { role: "user", content: key.charAt(0).toUpperCase() + key.slice(1) }]);
-                          setStreaming(true);
-                          setInput("");
-                          cleanupRef.current = streamText(
-                            response,
-                            (partial) => {
-                              setMessages((prev) => {
-                                const last = prev[prev.length - 1];
-                                if (last?.role === "assistant" && prev[prev.length - 2]?.role === "user") {
-                                  return prev.map((m, idx) => (idx === prev.length - 1 ? { ...m, content: partial } : m));
-                                }
-                                return [...prev, { role: "assistant", content: partial }];
-                              });
-                            },
-                            () => setStreaming(false)
-                          );
-                        }, 0);
-                      }}
-                      className="text-[10px] px-2.5 py-1 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors capitalize"
-                    >
-                      {key}
-                    </button>
-                  ))}
+                {Object.keys(agentConversations[agent.id]?.responses || {}).filter((k) => k !== "default").map((key) => (
+                  <button key={key} onClick={() => sendChip(key)} className="text-[10px] px-2.5 py-1 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors capitalize">{key}</button>
+                ))}
               </div>
             )}
-
-            {/* Input */}
             <div className="p-3 border-t border-border/50">
               <div className="flex gap-2">
-                <input
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                  placeholder={`Ask ${agent.name} anything...`}
-                  className="flex-1 bg-secondary/50 text-sm text-foreground placeholder:text-muted-foreground px-3 py-2 rounded-lg border border-border/50 focus:outline-none focus:border-primary/50 transition-colors"
-                />
-                <button
-                  onClick={handleSend}
-                  disabled={!input.trim() || streaming}
-                  className="bg-primary/10 text-primary p-2 rounded-lg hover:bg-primary/20 transition-colors disabled:opacity-40"
-                >
-                  <Send className="w-4 h-4" />
-                </button>
+                <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSend()} placeholder={`Ask ${agent.name} anything...`} className="flex-1 bg-secondary/50 text-sm text-foreground placeholder:text-muted-foreground px-3 py-2 rounded-lg border border-border/50 focus:outline-none focus:border-primary/50 transition-colors" />
+                <button onClick={handleSend} disabled={!input.trim() || streaming} className="bg-primary/10 text-primary p-2 rounded-lg hover:bg-primary/20 transition-colors disabled:opacity-40"><Send className="w-4 h-4" /></button>
               </div>
             </div>
           </div>
