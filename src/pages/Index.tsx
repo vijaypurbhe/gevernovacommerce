@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Activity, Zap } from "lucide-react";
 import KpiTile from "@/components/KpiTile";
 import AgentCard from "@/components/AgentCard";
@@ -6,9 +7,17 @@ import ChannelTable from "@/components/ChannelTable";
 import AiCommandInput from "@/components/AiCommandInput";
 import ScenarioPanel from "@/components/ScenarioPanel";
 import CustomerProfile from "@/components/CustomerProfile";
+import BudgetOptimization from "@/components/BudgetOptimization";
+import GovernancePanel from "@/components/GovernancePanel";
+import ForecastingPanel from "@/components/ForecastingPanel";
+import { StateToggle, CurrentVsFuture } from "@/components/StateToggle";
+import DataLineage from "@/components/DataLineage";
+import StreamingAlerts from "@/components/StreamingAlerts";
 import { kpiData, agents, scenarios } from "@/data/mockData";
 
 const Index = () => {
+  const [viewState, setViewState] = useState<"current" | "agentic">("agentic");
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -23,17 +32,18 @@ const Index = () => {
                 Agentic Commerce Intelligence
               </h1>
               <p className="text-[10px] text-muted-foreground">
-                SFCC • Data Cloud • GA4 • BigQuery • Marketing Cloud
+                SFCC • Data Cloud • GA4 • BigQuery • Marketing Cloud • CRM
               </p>
             </div>
           </div>
           <div className="flex items-center gap-4">
+            <StateToggle state={viewState} onChange={setViewState} />
             <div className="flex items-center gap-1.5 text-[10px]">
               <Activity className="w-3 h-3 text-success animate-pulse" />
               <span className="text-success font-medium">Live</span>
               <span className="text-muted-foreground">• 5 agents active</span>
             </div>
-            <div className="text-[10px] text-muted-foreground font-mono">
+            <div className="text-[10px] text-muted-foreground font-mono hidden lg:block">
               2M customers • 150K SKUs • 18mo data
             </div>
           </div>
@@ -41,6 +51,9 @@ const Index = () => {
       </header>
 
       <main className="max-w-[1600px] mx-auto px-6 py-6 space-y-6">
+        {/* Streaming Alerts */}
+        <StreamingAlerts />
+
         {/* KPI Grid */}
         <section className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
           {kpiData.map((kpi, i) => (
@@ -56,6 +69,9 @@ const Index = () => {
           </div>
           <AiCommandInput />
         </section>
+
+        {/* Forecasting + Segmentation */}
+        <ForecastingPanel />
 
         {/* Agent Cards */}
         <section>
@@ -76,10 +92,22 @@ const Index = () => {
           <CustomerProfile />
         </section>
 
+        {/* Attribution & Budget Optimization */}
+        <BudgetOptimization />
+
+        {/* Data Lineage + Current vs Future */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <DataLineage />
+          <CurrentVsFuture state={viewState} />
+        </section>
+
+        {/* Governance */}
+        <GovernancePanel />
+
         {/* Footer */}
         <footer className="text-center py-4 border-t border-border/30">
           <p className="text-[10px] text-muted-foreground">
-            Simulated Demo Environment • Salesforce Commerce Cloud + GA4 + Data Cloud + Agentforce
+            Simulated Demo Environment • Salesforce Commerce Cloud + GA4 + Data Cloud + Einstein + Agentforce
           </p>
         </footer>
       </main>
