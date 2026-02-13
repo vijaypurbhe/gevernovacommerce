@@ -10,11 +10,11 @@ interface Alert {
 }
 
 const alertsPool: Omit<Alert, "id">[] = [
-  { agent: "Fleet Performance Agent", message: "7HA.03 Unit #4 at SEC Dammam: heat rate degradation 2.1% — compressor fouling pattern detected", severity: "critical", time: "Just now" },
-  { agent: "CSA Renewal Agent", message: "ACWA Power ($420M CSA) issued competitive RFI to Siemens Energy", severity: "critical", time: "2 min ago" },
-  { agent: "Supply Chain Agent", message: "Haynes International nickel alloy lead time extended 3 weeks — 340 HGP services at risk", severity: "warning", time: "5 min ago" },
-  { agent: "Grid Modernization Agent", message: "Transformer manufacturing at 104% utilization — capacity reallocation recommended", severity: "warning", time: "8 min ago" },
-  { agent: "Revenue & Orders Agent", message: "4 HA turbine opportunities ($1.8B) entering final negotiation — 45-day window", severity: "warning", time: "12 min ago" },
+  { agent: "Cart Recovery Agent", message: "Checkout step 3 drop-off spiked to 38% in last hour — shipping cost shock on 12 high-value carts ($84K total)", severity: "critical", time: "Just now" },
+  { agent: "Retention Agent", message: "Duke Energy Services (Top 1 account, $3.2M/yr) — no orders in 94 days, competitor portal visits detected in GA4", severity: "critical", time: "2 min ago" },
+  { agent: "Merchandising Agent", message: "GA4 site search: 1,240 queries for 'wind gearbox bearing' today — product page missing from SFCC catalog", severity: "warning", time: "5 min ago" },
+  { agent: "Marketing Attribution Agent", message: "Google Ads CPC up 18% this week — ROAS dropping below 4.5x threshold on non-brand campaigns", severity: "warning", time: "8 min ago" },
+  { agent: "Revenue Optimization Agent", message: "Einstein A/B test results: dynamic pricing variant showing +14% revenue on top 200 SKUs (95% confidence)", severity: "warning", time: "12 min ago" },
 ];
 
 const StreamingAlerts = () => {

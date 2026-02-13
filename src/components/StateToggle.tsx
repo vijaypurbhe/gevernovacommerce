@@ -8,17 +8,17 @@ const StateToggle = ({ state, onChange }: { state: "current" | "agentic"; onChan
 );
 
 const currentMetrics = [
-  { label: "Fleet Anomaly Detection", current: "Manual inspection cycles (30-90 day intervals)", agentic: "Real-time digital twin detection (<5 min)" },
-  { label: "Root Cause Analysis", current: "Field engineer investigation (3-7 days)", agentic: "AI pattern matching across fleet database (<30 sec)" },
-  { label: "Parts Availability", current: "Reactive ordering (5-10 day mobilization)", agentic: "Predictive pre-positioning at regional hubs (24h)" },
-  { label: "CSA Risk Detection", current: "Annual account reviews", agentic: "Continuous competitive signal monitoring (real-time)" },
-  { label: "Outage Prevention", current: "Scheduled maintenance windows", agentic: "Predictive intervention 14+ days before failure" },
-  { label: "Grid Capacity Planning", current: "Quarterly demand planning", agentic: "AI-driven continuous capacity rebalancing" },
+  { label: "Product Discovery", current: "Manual catalog browsing + basic search", agentic: "Einstein AI search with visual recognition + predictive suggestions" },
+  { label: "Pricing Strategy", current: "Static price lists updated quarterly", agentic: "Dynamic pricing based on GA4 demand signals + elasticity models" },
+  { label: "Cart Recovery", current: "Batch email reminders (24h delay)", agentic: "Real-time exit-intent + personalized recovery flows (< 1 min)" },
+  { label: "Marketing Attribution", current: "Last-click reporting in GA4", agentic: "Data-driven multi-touch attribution with automated budget shifting" },
+  { label: "Customer Retention", current: "Manual account reviews (quarterly)", agentic: "Continuous churn prediction + automated re-engagement triggers" },
+  { label: "Catalog Management", current: "Manual product data entry (2-week cycle)", agentic: "AI-enriched product listings with auto-generated specs & compatibility" },
 ];
 
 const CurrentVsFuture = ({ state }: { state: "current" | "agentic" }) => (
   <div className="glass-card p-5">
-    <h3 className="text-sm font-semibold text-foreground mb-3">{state === "current" ? "Current Operations" : "Agentic Future State"}</h3>
+    <h3 className="text-sm font-semibold text-foreground mb-3">{state === "current" ? "Current eCommerce Operations" : "Agentic eCommerce Future"}</h3>
     <div className="space-y-2">
       {currentMetrics.map((m) => (
         <div key={m.label} className="flex items-center gap-3 text-xs">
@@ -33,9 +33,9 @@ const CurrentVsFuture = ({ state }: { state: "current" | "agentic" }) => (
       <div className="mt-4 bg-primary/5 border border-primary/20 rounded-lg p-3">
         <div className="text-[10px] text-primary font-medium mb-1">Projected Annual Impact</div>
         <div className="grid grid-cols-3 gap-3 text-center">
-          <div><div className="font-mono text-lg font-bold text-success">+$2.1B</div><div className="text-[9px] text-muted-foreground">Revenue Protection</div></div>
-          <div><div className="font-mono text-lg font-bold text-primary">14 days</div><div className="text-[9px] text-muted-foreground">Avg Early Warning</div></div>
-          <div><div className="font-mono text-lg font-bold text-warning">-62%</div><div className="text-[9px] text-muted-foreground">Unplanned Outages</div></div>
+          <div><div className="font-mono text-lg font-bold text-success">+$68M</div><div className="text-[9px] text-muted-foreground">Incremental Revenue</div></div>
+          <div><div className="font-mono text-lg font-bold text-primary">4.8%</div><div className="text-[9px] text-muted-foreground">Target Conv Rate</div></div>
+          <div><div className="font-mono text-lg font-bold text-warning">-42%</div><div className="text-[9px] text-muted-foreground">Cart Abandonment</div></div>
         </div>
       </div>
     )}

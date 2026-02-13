@@ -2,20 +2,22 @@ import { useState } from "react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
 
 const forecastData = [
-  { month: "Q1'25", actual: 7.6, forecast: null, upper: null, lower: null },
-  { month: "Q2'25", actual: 8.2, forecast: 8.2, upper: 8.2, lower: 8.2 },
-  { month: "Q3'25", actual: null, forecast: 8.8, upper: 9.4, lower: 8.2 },
-  { month: "Q4'25", actual: null, forecast: 9.6, upper: 10.4, lower: 8.8 },
-  { month: "Q1'26", actual: null, forecast: 8.4, upper: 9.2, lower: 7.6 },
-  { month: "Q2'26", actual: null, forecast: 9.2, upper: 10.1, lower: 8.3 },
+  { month: "Jul", actual: 108, forecast: null, upper: null, lower: null },
+  { month: "Aug", actual: 112, forecast: null, upper: null, lower: null },
+  { month: "Sep", actual: 118, forecast: null, upper: null, lower: null },
+  { month: "Oct", actual: 126, forecast: 126, upper: 126, lower: 126 },
+  { month: "Nov", actual: 134, forecast: 134, upper: 134, lower: 134 },
+  { month: "Dec", actual: null, forecast: 142, upper: 152, lower: 132 },
+  { month: "Jan", actual: null, forecast: 148, upper: 162, lower: 134 },
+  { month: "Feb", actual: null, forecast: 156, upper: 174, lower: 138 },
 ];
 
 const segmentData = [
-  { segment: "Gas Power — HA Fleet", customers: "84", revenue: "$4.2B", growth: "+12%", churn: "3%", ltv: "$680M" },
-  { segment: "Gas Power — F-Class", customers: "210", revenue: "$2.8B", growth: "+4%", churn: "6%", ltv: "$240M" },
-  { segment: "Wind — Offshore", customers: "42", revenue: "$1.6B", growth: "+18%", churn: "2%", ltv: "$520M" },
-  { segment: "Wind — Onshore", customers: "380", revenue: "$1.2B", growth: "-2%", churn: "12%", ltv: "$48M" },
-  { segment: "Grid Solutions", customers: "620", revenue: "$1.1B", growth: "+34%", churn: "8%", ltv: "$28M" },
+  { segment: "Replacement Parts", customers: "2,840", revenue: "$62M", growth: "+14%", churn: "6%", ltv: "$48K" },
+  { segment: "Service Kits & Bundles", customers: "1,420", revenue: "$34M", growth: "+22%", churn: "4%", ltv: "$62K" },
+  { segment: "Safety & Compliance", customers: "1,860", revenue: "$22M", growth: "+8%", churn: "3%", ltv: "$28K" },
+  { segment: "Tools & Equipment", customers: "980", revenue: "$14M", growth: "+18%", churn: "8%", ltv: "$18K" },
+  { segment: "Digital Subscriptions", customers: "420", revenue: "$10M", growth: "+34%", churn: "12%", ltv: "$82K" },
 ];
 
 const ForecastingPanel = () => {
@@ -33,8 +35,8 @@ const ForecastingPanel = () => {
     <div className="glass-card p-5 space-y-5">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-semibold text-foreground">Orders Forecasting & Segment Intelligence</h3>
-          <p className="text-[10px] text-muted-foreground mt-0.5">Predictive models • 95% confidence interval • Cross-segment analysis</p>
+          <h3 className="text-sm font-semibold text-foreground">Revenue Forecasting & Product Intelligence</h3>
+          <p className="text-[10px] text-muted-foreground mt-0.5">Einstein predictive models • 95% confidence interval • SFCC + GA4 data</p>
         </div>
         <div className="flex gap-1">
           {(["pessimistic", "baseline", "optimistic"] as const).map((s) => (
@@ -53,8 +55,8 @@ const ForecastingPanel = () => {
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(220, 16%, 18%)" vertical={false} />
           <XAxis dataKey="month" tick={{ fill: "hsl(215, 15%, 55%)", fontSize: 11 }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fill: "hsl(215, 15%, 55%)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}B`} />
-          <Tooltip contentStyle={{ backgroundColor: "hsl(220, 18%, 12%)", border: "1px solid hsl(220, 16%, 22%)", borderRadius: "8px", fontSize: "11px" }} formatter={(v: number) => [`$${v}B`]} />
+          <YAxis tick={{ fill: "hsl(215, 15%, 55%)", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}M`} />
+          <Tooltip contentStyle={{ backgroundColor: "hsl(220, 18%, 12%)", border: "1px solid hsl(220, 16%, 22%)", borderRadius: "8px", fontSize: "11px" }} formatter={(v: number) => [`$${v}M`]} />
           <Area type="monotone" dataKey="upper" stroke="none" fill="url(#confidenceGrad)" />
           <Area type="monotone" dataKey="lower" stroke="none" fill="hsl(220, 20%, 6%)" />
           <Line type="monotone" dataKey="actual" stroke="hsl(195, 100%, 50%)" strokeWidth={2} dot={{ r: 3, fill: "hsl(195, 100%, 50%)" }} connectNulls={false} />
@@ -63,14 +65,14 @@ const ForecastingPanel = () => {
       </ResponsiveContainer>
 
       <div>
-        <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium mb-2">Segment Intelligence</div>
+        <div className="text-[10px] uppercase tracking-wide text-muted-foreground font-medium mb-2">Product Category Performance</div>
         <div className="overflow-x-auto">
           <table className="w-full text-[11px]">
             <thead>
               <tr className="border-b border-border/50">
-                <th className="text-left py-1.5 text-muted-foreground font-medium">Segment</th>
-                <th className="text-right py-1.5 text-muted-foreground font-medium">Accounts</th>
-                <th className="text-right py-1.5 text-muted-foreground font-medium">Orders</th>
+                <th className="text-left py-1.5 text-muted-foreground font-medium">Category</th>
+                <th className="text-right py-1.5 text-muted-foreground font-medium">Buyers</th>
+                <th className="text-right py-1.5 text-muted-foreground font-medium">Revenue</th>
                 <th className="text-right py-1.5 text-muted-foreground font-medium">Growth</th>
                 <th className="text-right py-1.5 text-muted-foreground font-medium">Churn</th>
                 <th className="text-right py-1.5 text-muted-foreground font-medium">Avg LTV</th>
