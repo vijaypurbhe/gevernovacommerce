@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useImperativeHandle, forwardRef } from "react";
 import { Send, MessageSquare, X } from "lucide-react";
 import type { Agent, AgentStatus } from "@/data/mockData";
 import { agentConversations } from "@/data/mockData";
@@ -14,7 +14,6 @@ interface Message {
   content: string;
 }
 
-// Realistic streaming with variable speed and thinking pauses
 function streamRealistic(
   text: string,
   onChunk: (partial: string) => void,
@@ -55,24 +54,61 @@ function streamRealistic(
   tick();
 }
 
-const AgentCard = ({ agent }: { agent: Agent }) => {
+export interface AgentCardHandle {
+  openWithContext: (context: string) => void;
+}
+
+interface AgentCardProps {
+  agent: Agent;
+}
+
+const AgentCard = forwardRef<AgentCardHandle, AgentCardProps>(({ agent }, ref) => {
   const [executing, setExecuting] = useState(false);
   const [executed, setExecuted] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
+  const [pendingContext, setPendingContext] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const config = statusConfig[agent.status];
+
+  useImperativeHandle(ref, () => ({
+    openWithContext: (context: string) => {
+      setMessages([]);
+      setPendingContext(context);
+      setChatOpen(true);
+    },
+  }));
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
   useEffect(() => {
-    if (chatOpen && messages.length === 0) {
-      const conv = agentConversations[agent.id];
-      if (!conv) return;
+    if (!chatOpen || messages.length > 0) return;
+
+    const conv = agentConversations[agent.id];
+    if (!conv) return;
+
+    if (pendingContext) {
+      // Open with alert context: show alert as user message, then contextual response
+      const contextMsg = pendingContext;
+      setPendingContext(null);
+      setMessages([{ role: "user", content: `🚨 Alert: ${contextMsg}` }]);
+      setStreaming(true);
+
+      const contextualIntro = `I see this alert just came in. Let me investigate immediately.\n\n`;
+      const greeting = conv.greeting;
+      const fullResponse = contextualIntro + greeting;
+
+      streamRealistic(fullResponse, (partial) => {
+        setMessages((prev) => {
+          if (prev.length === 1) return [...prev, { role: "assistant", content: partial }];
+          return prev.map((m, idx) => (idx === prev.length - 1 ? { ...m, content: partial } : m));
+        });
+      }, () => setStreaming(false));
+    } else {
       setStreaming(true);
       streamRealistic(conv.greeting, (partial) => {
         setMessages([{ role: "assistant", content: partial }]);
@@ -161,7 +197,7 @@ const AgentCard = ({ agent }: { agent: Agent }) => {
             <span className="font-mono font-semibold text-success">{agent.impact}</span>
           </span>
           <div className="flex items-center gap-1.5">
-            <button onClick={() => setChatOpen(true)} className="text-[11px] font-medium px-2.5 py-1.5 rounded-md bg-secondary/60 text-muted-foreground hover:text-foreground hover:bg-secondary transition-all flex items-center gap-1">
+            <button onClick={() => { setMessages([]); setPendingContext(null); setChatOpen(true); }} className="text-[11px] font-medium px-2.5 py-1.5 rounded-md bg-secondary/60 text-muted-foreground hover:text-foreground hover:bg-secondary transition-all flex items-center gap-1">
               <MessageSquare className="w-3 h-3" /> Chat
             </button>
             <button onClick={handleExecute} disabled={executing || executed} className={`text-[11px] font-medium px-3 py-1.5 rounded-md transition-all ${executed ? "bg-success/20 text-success cursor-default" : executing ? "bg-primary/20 text-primary animate-pulse cursor-wait" : "bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer"}`}>
@@ -198,7 +234,7 @@ const AgentCard = ({ agent }: { agent: Agent }) => {
                 </div>
               ))}
             </div>
-            {messages.length <= 1 && !streaming && (
+            {messages.length <= 2 && !streaming && (
               <div className="px-4 pb-2 flex flex-wrap gap-1.5">
                 {Object.keys(agentConversations[agent.id]?.responses || {}).filter((k) => k !== "default").map((key) => (
                   <button key={key} onClick={() => sendChip(key)} className="text-[10px] px-2.5 py-1 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors capitalize">{key}</button>
@@ -216,6 +252,8 @@ const AgentCard = ({ agent }: { agent: Agent }) => {
       )}
     </>
   );
-};
+});
+
+AgentCard.displayName = "AgentCard";
 
 export default AgentCard;

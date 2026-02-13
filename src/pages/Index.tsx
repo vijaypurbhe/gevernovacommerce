@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Activity, Zap } from "lucide-react";
 import KpiTile from "@/components/KpiTile";
-import AgentCard from "@/components/AgentCard";
+import AgentCard, { type AgentCardHandle } from "@/components/AgentCard";
 import RevenueChart from "@/components/RevenueChart";
 import ChannelTable from "@/components/ChannelTable";
 import AiCommandInput from "@/components/AiCommandInput";
@@ -18,6 +18,14 @@ import { kpiData, agents, scenarios } from "@/data/mockData";
 
 const Index = () => {
   const [viewState, setViewState] = useState<"current" | "agentic">("agentic");
+  const agentRefs = useRef<Record<string, AgentCardHandle | null>>({});
+
+  const handleAlertClick = useCallback((agentId: string, alertContext: string) => {
+    const agentRef = agentRefs.current[agentId];
+    if (agentRef) {
+      agentRef.openWithContext(alertContext);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -70,7 +78,7 @@ const Index = () => {
         </section>
 
         {/* Streaming Alerts - after stats and graph */}
-        <StreamingAlerts />
+        <StreamingAlerts onAlertClick={handleAlertClick} />
 
         {/* Forecasting + Segmentation */}
         <ForecastingPanel />
@@ -84,7 +92,11 @@ const Index = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
             {agents.map((agent) => (
-              <AgentCard key={agent.id} agent={agent} />
+              <AgentCard
+                key={agent.id}
+                ref={(el) => { agentRefs.current[agent.id] = el; }}
+                agent={agent}
+              />
             ))}
           </div>
         </section>
