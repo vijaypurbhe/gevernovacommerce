@@ -49,18 +49,18 @@ const ForecastingPanel = () => {
         <AreaChart data={adjustedData} margin={{ top: 5, right: 5, left: -10, bottom: 0 }}>
           <defs>
             <linearGradient id="confidenceGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.15} />
-              <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+              <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.25} />
+              <stop offset="100%" stopColor="#3b82f6" stopOpacity={0.05} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
           <XAxis dataKey="month" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} axisLine={false} tickLine={false} />
-          <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}M`} />
+          <YAxis domain={[0, 'auto']} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}M`} />
           <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: "11px" }} formatter={(v: number) => [`$${v}M`]} />
           <Area type="monotone" dataKey="upper" stroke="none" fill="url(#confidenceGrad)" />
           <Area type="monotone" dataKey="lower" stroke="none" fill="hsl(var(--background))" />
-          <Line type="monotone" dataKey="actual" stroke="hsl(var(--primary))" strokeWidth={2} dot={{ r: 3, fill: "hsl(var(--primary))" }} connectNulls={false} />
-          <Line type="monotone" dataKey="forecast" stroke="hsl(var(--primary))" strokeWidth={2} strokeDasharray="6 3" dot={{ r: 3, fill: "hsl(var(--accent))", strokeDasharray: "0" }} connectNulls={false} />
+          <Line type="monotone" dataKey="actual" stroke="#3b82f6" strokeWidth={2.5} dot={{ r: 4, fill: "#3b82f6", stroke: "#fff", strokeWidth: 1 }} connectNulls={false} />
+          <Line type="monotone" dataKey="forecast" stroke="#f59e0b" strokeWidth={2.5} strokeDasharray="6 3" dot={{ r: 4, fill: "#f59e0b", stroke: "#fff", strokeWidth: 1, strokeDasharray: "0" }} connectNulls={false} />
         </AreaChart>
       </ResponsiveContainer>
 
