@@ -55,7 +55,7 @@ const ForecastingPanel = () => {
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
           <XAxis dataKey="month" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} axisLine={false} tickLine={false} />
-          <YAxis domain={[0, 'auto']} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}M`} />
+          <YAxis domain={[0, 'dataMax + 20']} allowDataOverflow={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}M`} />
           <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: "11px" }} formatter={(v: number) => [`$${v}M`]} />
           <Area type="monotone" dataKey="upper" stroke="none" fill="url(#confidenceGrad)" />
           <Area type="monotone" dataKey="lower" stroke="none" fill="hsl(var(--background))" />
