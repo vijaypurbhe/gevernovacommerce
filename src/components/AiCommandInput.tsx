@@ -1,11 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Send, Sparkles } from "lucide-react";
-import { aiResponses } from "@/data/mockData";
-
-interface Message {
-  role: "user" | "assistant";
-  content: string;
-}
+import { streamChat, type Msg } from "@/lib/streamChat";
+import ChatMessage from "@/components/ChatMessage";
+import { toast } from "sonner";
 
 const suggestedQueries = [
   "How is online revenue trending this quarter?",
@@ -16,65 +13,8 @@ const suggestedQueries = [
   "Give me the executive briefing",
 ];
 
-function matchResponse(query: string): string {
-  const q = query.toLowerCase();
-  if (q.includes("revenue") || q.includes("order") || q.includes("sales") || q.includes("aov")) return aiResponses.revenue;
-  if (q.includes("conversion") || q.includes("funnel") || q.includes("checkout") || q.includes("cart") || q.includes("abandon")) return aiResponses.conversion;
-  if (q.includes("segment") || q.includes("customer") || q.includes("cohort") || q.includes("retention") || q.includes("ltv")) return aiResponses.segments;
-  if (q.includes("marketing") || q.includes("attribution") || q.includes("channel") || q.includes("roas") || q.includes("paid") || q.includes("seo")) return aiResponses.marketing;
-  return aiResponses.default;
-}
-
-// Simulate realistic typing with variable speed + pauses at paragraph breaks
-function streamRealistic(
-  text: string,
-  onChunk: (partial: string) => void,
-  onDone: () => void
-) {
-  let i = 0;
-  let thinkingDone = false;
-
-  const tick = () => {
-    // Simulate initial "thinking" pause
-    if (!thinkingDone && i === 0) {
-      thinkingDone = true;
-      setTimeout(tick, 400 + Math.random() * 600); // 400-1000ms thinking
-      return;
-    }
-
-    // Variable chunk size — faster in middle of words, slower at punctuation
-    const char = text[i] || "";
-    let chunkSize = Math.floor(Math.random() * 5) + 2;
-
-    // Slow down at paragraph breaks and sentence ends
-    if (char === "\n" || char === "." || char === ":" || char === "|") {
-      chunkSize = 1;
-    }
-
-    i += chunkSize;
-    if (i >= text.length) {
-      i = text.length;
-      onChunk(text);
-      onDone();
-      return;
-    }
-
-    onChunk(text.slice(0, i));
-
-    // Variable delay — faster normally, pauses at line breaks
-    let delay = 8 + Math.random() * 12;
-    if (text[i - 1] === "\n" && text[i] === "\n") delay = 80 + Math.random() * 120; // paragraph pause
-    else if (text[i - 1] === "\n") delay = 30 + Math.random() * 50;
-    else if (text[i - 1] === "." || text[i - 1] === ":") delay = 20 + Math.random() * 30;
-
-    setTimeout(tick, delay);
-  };
-
-  tick();
-}
-
 const AiCommandInput = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -83,27 +23,39 @@ const AiCommandInput = () => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
-  const sendMessage = (text: string) => {
-    if (streaming) return;
-    setMessages((prev) => [...prev, { role: "user", content: text }]);
+  const sendMessage = async (text: string) => {
+    if (streaming || !text.trim()) return;
+    const userMsg: Msg = { role: "user", content: text.trim() };
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
     setStreaming(true);
     setInput("");
 
-    const fullResponse = matchResponse(text);
+    let assistantSoFar = "";
+    const upsertAssistant = (chunk: string) => {
+      assistantSoFar += chunk;
+      const content = assistantSoFar;
+      setMessages((prev) => {
+        const last = prev[prev.length - 1];
+        if (last?.role === "assistant") {
+          return prev.map((m, i) => (i === prev.length - 1 ? { ...m, content } : m));
+        }
+        return [...prev, { role: "assistant", content }];
+      });
+    };
 
-    streamRealistic(
-      fullResponse,
-      (partial) => {
-        setMessages((prev) => {
-          const last = prev[prev.length - 1];
-          if (last?.role === "assistant") {
-            return prev.map((m, idx) => (idx === prev.length - 1 ? { ...m, content: partial } : m));
-          }
-          return [...prev, { role: "assistant", content: partial }];
-        });
-      },
-      () => setStreaming(false)
-    );
+    try {
+      await streamChat({
+        messages: newMessages,
+        agentId: "command",
+        onDelta: upsertAssistant,
+        onDone: () => setStreaming(false),
+        onError: (err) => toast.error(err),
+      });
+    } catch {
+      setStreaming(false);
+      toast.error("Failed to connect to AI");
+    }
   };
 
   return (
@@ -137,20 +89,12 @@ const AiCommandInput = () => {
           </div>
         )}
         {messages.map((msg, i) => (
-          <div key={i} className={`text-xs leading-relaxed ${msg.role === "user" ? "text-right" : ""}`}>
-            {msg.role === "user" ? (
-              <span className="inline-block bg-primary/10 text-primary px-3 py-2 rounded-lg max-w-[85%] text-left">
-                {msg.content}
-              </span>
-            ) : (
-              <div className="bg-secondary/50 rounded-lg p-3 whitespace-pre-wrap text-foreground">
-                {msg.content}
-                {streaming && i === messages.length - 1 && (
-                  <span className="inline-block w-1.5 h-3.5 bg-primary ml-0.5 animate-pulse" />
-                )}
-              </div>
-            )}
-          </div>
+          <ChatMessage
+            key={i}
+            role={msg.role}
+            content={msg.content}
+            isStreaming={streaming && i === messages.length - 1 && msg.role === "assistant"}
+          />
         ))}
       </div>
 
@@ -159,12 +103,12 @@ const AiCommandInput = () => {
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && sendMessage(input.trim())}
+            onKeyDown={(e) => e.key === "Enter" && sendMessage(input)}
             placeholder="Ask about revenue, conversion, marketing, segments..."
             className="flex-1 bg-secondary/50 text-sm text-foreground placeholder:text-muted-foreground px-3 py-2 rounded-lg border border-border/50 focus:outline-none focus:border-primary/50 transition-colors"
           />
           <button
-            onClick={() => input.trim() && sendMessage(input.trim())}
+            onClick={() => sendMessage(input)}
             disabled={!input.trim() || streaming}
             className="bg-primary/10 text-primary p-2 rounded-lg hover:bg-primary/20 transition-colors disabled:opacity-40"
           >
