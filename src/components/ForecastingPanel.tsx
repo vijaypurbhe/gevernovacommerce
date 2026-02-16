@@ -45,22 +45,26 @@ const ForecastingPanel = () => {
         </div>
       </div>
 
-      <ResponsiveContainer width="100%" height={200}>
-        <AreaChart data={adjustedData} margin={{ top: 5, right: 5, left: -10, bottom: 0 }}>
+      <ResponsiveContainer width="100%" height={220}>
+        <AreaChart data={adjustedData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
           <defs>
             <linearGradient id="confidenceGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.25} />
+              <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.2} />
+              <stop offset="100%" stopColor="#3b82f6" stopOpacity={0.02} />
+            </linearGradient>
+            <linearGradient id="actualGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.3} />
               <stop offset="100%" stopColor="#3b82f6" stopOpacity={0.05} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
           <XAxis dataKey="month" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} axisLine={false} tickLine={false} />
-          <YAxis domain={[0, 'dataMax + 20']} allowDataOverflow={false} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}M`} />
+          <YAxis domain={[80, 'dataMax + 10']} tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v) => `$${v}M`} />
           <Tooltip contentStyle={{ backgroundColor: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: "11px" }} formatter={(v: number) => [`$${v}M`]} />
           <Area type="monotone" dataKey="upper" stroke="none" fill="url(#confidenceGrad)" />
           <Area type="monotone" dataKey="lower" stroke="none" fill="hsl(var(--background))" />
-          <Line type="monotone" dataKey="actual" stroke="#3b82f6" strokeWidth={2.5} dot={{ r: 4, fill: "#3b82f6", stroke: "#fff", strokeWidth: 1 }} connectNulls={false} />
-          <Line type="monotone" dataKey="forecast" stroke="#f59e0b" strokeWidth={2.5} strokeDasharray="6 3" dot={{ r: 4, fill: "#f59e0b", stroke: "#fff", strokeWidth: 1, strokeDasharray: "0" }} connectNulls={false} />
+          <Area type="monotone" dataKey="actual" stroke="#3b82f6" strokeWidth={2.5} fill="url(#actualGrad)" dot={{ r: 4, fill: "#3b82f6", stroke: "#fff", strokeWidth: 1.5 }} connectNulls={false} />
+          <Line type="monotone" dataKey="forecast" stroke="#f59e0b" strokeWidth={2.5} strokeDasharray="6 3" dot={{ r: 4, fill: "#f59e0b", stroke: "#fff", strokeWidth: 1.5, strokeDasharray: "0" }} connectNulls={false} />
         </AreaChart>
       </ResponsiveContainer>
 
