@@ -1,58 +1,15 @@
 import { useState, useRef, useEffect, useImperativeHandle, forwardRef } from "react";
 import { Send, MessageSquare, X } from "lucide-react";
 import type { Agent, AgentStatus } from "@/data/mockData";
-import { agentConversations } from "@/data/mockData";
+import { streamChat, type Msg } from "@/lib/streamChat";
+import ChatMessage from "@/components/ChatMessage";
+import { toast } from "sonner";
 
 const statusConfig: Record<AgentStatus, { label: string; dotClass: string; bgClass: string }> = {
   monitoring: { label: "Monitoring", dotClass: "bg-success", bgClass: "bg-success/10 text-success" },
   alert: { label: "Alert", dotClass: "bg-warning", bgClass: "bg-warning/10 text-warning" },
   acting: { label: "Acting", dotClass: "bg-primary", bgClass: "bg-primary/10 text-primary" },
 };
-
-interface Message {
-  role: "user" | "assistant";
-  content: string;
-}
-
-function streamRealistic(
-  text: string,
-  onChunk: (partial: string) => void,
-  onDone: () => void
-) {
-  let i = 0;
-  let started = false;
-
-  const tick = () => {
-    if (!started) {
-      started = true;
-      setTimeout(tick, 300 + Math.random() * 500);
-      return;
-    }
-
-    const char = text[i] || "";
-    let chunkSize = Math.floor(Math.random() * 5) + 2;
-    if (char === "\n" || char === "." || char === ":" || char === "|") chunkSize = 1;
-
-    i += chunkSize;
-    if (i >= text.length) {
-      i = text.length;
-      onChunk(text);
-      onDone();
-      return;
-    }
-
-    onChunk(text.slice(0, i));
-
-    let delay = 8 + Math.random() * 12;
-    if (text[i - 1] === "\n" && text[i] === "\n") delay = 80 + Math.random() * 120;
-    else if (text[i - 1] === "\n") delay = 30 + Math.random() * 50;
-    else if (text[i - 1] === "." || text[i - 1] === ":") delay = 20 + Math.random() * 30;
-
-    setTimeout(tick, delay);
-  };
-
-  tick();
-}
 
 export interface AgentCardHandle {
   openWithContext: (context: string) => void;
@@ -66,7 +23,7 @@ const AgentCard = forwardRef<AgentCardHandle, AgentCardProps>(({ agent }, ref) =
   const [executing, setExecuting] = useState(false);
   const [executed, setExecuted] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const [pendingContext, setPendingContext] = useState<string | null>(null);
@@ -88,33 +45,49 @@ const AgentCard = forwardRef<AgentCardHandle, AgentCardProps>(({ agent }, ref) =
   useEffect(() => {
     if (!chatOpen || messages.length > 0) return;
 
-    const conv = agentConversations[agent.id];
-    if (!conv) return;
-
     if (pendingContext) {
-      // Open with alert context: show alert as user message, then contextual response
       const contextMsg = pendingContext;
       setPendingContext(null);
-      setMessages([{ role: "user", content: `🚨 Alert: ${contextMsg}` }]);
-      setStreaming(true);
-
-      const contextualIntro = `I see this alert just came in. Let me investigate immediately.\n\n`;
-      const greeting = conv.greeting;
-      const fullResponse = contextualIntro + greeting;
-
-      streamRealistic(fullResponse, (partial) => {
-        setMessages((prev) => {
-          if (prev.length === 1) return [...prev, { role: "assistant", content: partial }];
-          return prev.map((m, idx) => (idx === prev.length - 1 ? { ...m, content: partial } : m));
-        });
-      }, () => setStreaming(false));
+      const userMsg: Msg = { role: "user", content: `🚨 Alert: ${contextMsg}` };
+      setMessages([userMsg]);
+      sendToAI([userMsg]);
     } else {
-      setStreaming(true);
-      streamRealistic(conv.greeting, (partial) => {
-        setMessages([{ role: "assistant", content: partial }]);
-      }, () => setStreaming(false));
+      // Send an initial greeting request
+      const initMsg: Msg = { role: "user", content: "Hello, give me a brief overview of your current status and key findings." };
+      setMessages([initMsg]);
+      sendToAI([initMsg]);
     }
   }, [chatOpen]);
+
+  const sendToAI = async (msgs: Msg[]) => {
+    setStreaming(true);
+    let assistantSoFar = "";
+
+    const upsertAssistant = (chunk: string) => {
+      assistantSoFar += chunk;
+      const content = assistantSoFar;
+      setMessages((prev) => {
+        const last = prev[prev.length - 1];
+        if (last?.role === "assistant") {
+          return prev.map((m, i) => (i === prev.length - 1 ? { ...m, content } : m));
+        }
+        return [...prev, { role: "assistant", content }];
+      });
+    };
+
+    try {
+      await streamChat({
+        messages: msgs,
+        agentId: agent.id,
+        onDelta: upsertAssistant,
+        onDone: () => setStreaming(false),
+        onError: (err) => toast.error(err),
+      });
+    } catch {
+      setStreaming(false);
+      toast.error("Failed to connect to AI agent");
+    }
+  };
 
   const handleExecute = () => {
     setExecuting(true);
@@ -123,47 +96,11 @@ const AgentCard = forwardRef<AgentCardHandle, AgentCardProps>(({ agent }, ref) =
 
   const handleSend = () => {
     if (!input.trim() || streaming) return;
-    const userMsg = input.trim().toLowerCase();
-    const displayMsg = input.trim();
+    const userMsg: Msg = { role: "user", content: input.trim() };
     setInput("");
-    setMessages((prev) => [...prev, { role: "user", content: displayMsg }]);
-    setStreaming(true);
-
-    const conv = agentConversations[agent.id];
-    let response = conv?.responses.default || "I'm analyzing your request across our operational data. Let me pull the relevant information together.";
-    if (conv) {
-      for (const [key, val] of Object.entries(conv.responses)) {
-        if (key !== "default" && userMsg.includes(key)) { response = val; break; }
-      }
-    }
-
-    streamRealistic(response, (partial) => {
-      setMessages((prev) => {
-        const last = prev[prev.length - 1];
-        if (last?.role === "assistant" && prev.length > 1 && prev[prev.length - 2]?.role === "user") {
-          return prev.map((m, idx) => (idx === prev.length - 1 ? { ...m, content: partial } : m));
-        }
-        return [...prev, { role: "assistant", content: partial }];
-      });
-    }, () => setStreaming(false));
-  };
-
-  const sendChip = (key: string) => {
-    const conv = agentConversations[agent.id];
-    const response = conv?.responses[key] || conv?.responses.default || "";
-    const label = key.charAt(0).toUpperCase() + key.slice(1);
-    setMessages((prev) => [...prev, { role: "user", content: label }]);
-    setStreaming(true);
-    setInput("");
-    streamRealistic(response, (partial) => {
-      setMessages((prev) => {
-        const last = prev[prev.length - 1];
-        if (last?.role === "assistant" && prev[prev.length - 2]?.role === "user") {
-          return prev.map((m, idx) => (idx === prev.length - 1 ? { ...m, content: partial } : m));
-        }
-        return [...prev, { role: "assistant", content: partial }];
-      });
-    }, () => setStreaming(false));
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
+    sendToAI(newMessages);
   };
 
   return (
@@ -222,25 +159,14 @@ const AgentCard = forwardRef<AgentCardHandle, AgentCardProps>(({ agent }, ref) =
             </div>
             <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
               {messages.map((msg, i) => (
-                <div key={i} className={`text-xs leading-relaxed ${msg.role === "user" ? "text-right" : ""}`}>
-                  {msg.role === "user" ? (
-                    <span className="inline-block bg-primary/10 text-primary px-3 py-2 rounded-lg max-w-[85%] text-left">{msg.content}</span>
-                  ) : (
-                    <div className="bg-secondary/50 rounded-lg p-3 whitespace-pre-wrap text-foreground">
-                      {msg.content}
-                      {streaming && i === messages.length - 1 && <span className="inline-block w-1.5 h-3.5 bg-primary ml-0.5 animate-pulse" />}
-                    </div>
-                  )}
-                </div>
+                <ChatMessage
+                  key={i}
+                  role={msg.role}
+                  content={msg.content}
+                  isStreaming={streaming && i === messages.length - 1 && msg.role === "assistant"}
+                />
               ))}
             </div>
-            {messages.length <= 2 && !streaming && (
-              <div className="px-4 pb-2 flex flex-wrap gap-1.5">
-                {Object.keys(agentConversations[agent.id]?.responses || {}).filter((k) => k !== "default").map((key) => (
-                  <button key={key} onClick={() => sendChip(key)} className="text-[10px] px-2.5 py-1 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors capitalize">{key}</button>
-                ))}
-              </div>
-            )}
             <div className="p-3 border-t border-border/50">
               <div className="flex gap-2">
                 <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSend()} placeholder={`Ask ${agent.name} anything...`} className="flex-1 bg-secondary/50 text-sm text-foreground placeholder:text-muted-foreground px-3 py-2 rounded-lg border border-border/50 focus:outline-none focus:border-primary/50 transition-colors" />
