@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from "react";
-import { Activity, Zap } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Activity, FileText, LogOut, Zap } from "lucide-react";
 import KpiTile from "@/components/KpiTile";
 import AgentCard, { type AgentCardHandle } from "@/components/AgentCard";
 import RevenueChart from "@/components/RevenueChart";
@@ -14,10 +15,14 @@ import { StateToggle, CurrentVsFuture } from "@/components/StateToggle";
 import DataLineage from "@/components/DataLineage";
 import StreamingAlerts from "@/components/StreamingAlerts";
 import ThemeToggle from "@/components/ThemeToggle";
+import { Button } from "@/components/ui/button";
 import { kpiData, agents, scenarios } from "@/data/mockData";
+import Login from "./Login";
+import { clearAuthenticatedEmail, getAuthenticatedEmail, isLoginReportAdmin, setAuthenticatedEmail } from "@/lib/demoAccess";
 
 const Index = () => {
   const [viewState, setViewState] = useState<"current" | "agentic">("agentic");
+  const [authenticatedEmail, setCurrentAuthenticatedEmail] = useState<string | null>(() => getAuthenticatedEmail());
   const agentRefs = useRef<Record<string, AgentCardHandle | null>>({});
 
   const handleAlertClick = useCallback((agentId: string, alertContext: string) => {
@@ -27,9 +32,24 @@ const Index = () => {
     }
   }, []);
 
+  const handleAuthenticated = useCallback((email: string) => {
+    setAuthenticatedEmail(email);
+    setCurrentAuthenticatedEmail(email);
+  }, []);
+
+  const handleSignOut = useCallback(() => {
+    clearAuthenticatedEmail();
+    setCurrentAuthenticatedEmail(null);
+  }, []);
+
+  if (!authenticatedEmail) {
+    return <Login onAuthenticated={handleAuthenticated} />;
+  }
+
+  const canAccessLoginReport = isLoginReportAdmin(authenticatedEmail);
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="border-b border-border/50 bg-card/40 backdrop-blur-lg sticky top-0 z-50">
         <div className="max-w-[1920px] mx-auto px-4 sm:px-6 xl:px-10 py-3 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
@@ -57,24 +77,40 @@ const Index = () => {
             <div className="text-[10px] text-muted-foreground font-mono hidden xl:block">
               1.24M sessions • 150K SKUs • 4,200+ accounts
             </div>
+            {canAccessLoginReport ? (
+              <Button variant="outline" size="sm" className="hidden sm:inline-flex" asChild>
+                <Link to="/login-report">
+                  <FileText className="w-4 h-4" />
+                  Login Report
+                </Link>
+              </Button>
+            ) : null}
+            <Button variant="ghost" size="icon" onClick={handleSignOut} aria-label="Sign out">
+              <LogOut className="w-4 h-4" />
+            </Button>
             <ThemeToggle />
           </div>
         </div>
-        {/* Mobile state toggle */}
-        <div className="md:hidden px-4 pb-2">
+        <div className="md:hidden px-4 pb-2 space-y-2">
           <StateToggle state={viewState} onChange={setViewState} />
+          {canAccessLoginReport ? (
+            <Button variant="outline" size="sm" className="w-full" asChild>
+              <Link to="/login-report">
+                <FileText className="w-4 h-4" />
+                Login Report
+              </Link>
+            </Button>
+          ) : null}
         </div>
       </header>
 
       <main className="max-w-[1920px] mx-auto px-4 sm:px-6 xl:px-10 py-4 sm:py-6 space-y-4 sm:space-y-6">
-        {/* KPI Grid */}
         <section className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 sm:gap-3 xl:gap-4">
           {kpiData.map((kpi, i) => (
             <KpiTile key={kpi.label} {...kpi} index={i} />
           ))}
         </section>
 
-        {/* Charts + AI Command */}
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-4 xl:gap-6">
           <div className="lg:col-span-2 space-y-4">
             <RevenueChart />
@@ -83,13 +119,9 @@ const Index = () => {
           <AiCommandInput />
         </section>
 
-        {/* Streaming Alerts */}
         <StreamingAlerts onAlertClick={handleAlertClick} />
-
-        {/* Forecasting */}
         <ForecastingPanel />
 
-        {/* Agent Cards */}
         <section>
           <div className="flex items-center gap-2 mb-3 flex-wrap">
             <h2 className="text-sm xl:text-base font-bold text-foreground">AI Agent Layer</h2>
@@ -107,25 +139,20 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Scenarios + Customer Profile */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-4 xl:gap-6">
           <ScenarioPanel scenarios={scenarios} />
           <CustomerProfile />
         </section>
 
-        {/* Attribution & Budget Optimization */}
         <BudgetOptimization />
 
-        {/* Data Lineage + Current vs Future */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-4 xl:gap-6">
           <DataLineage />
           <CurrentVsFuture state={viewState} />
         </section>
 
-        {/* Governance */}
         <GovernancePanel />
 
-        {/* Footer */}
         <footer className="text-center py-4 border-t border-border/30">
           <p className="text-[10px] text-muted-foreground">
             Simulated Demo Environment • Salesforce Commerce Cloud + Google Analytics 4 + Data Cloud + Einstein AI + Agentforce
