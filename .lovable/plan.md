@@ -1,67 +1,116 @@
 
+Build a polished client-facing Word document that works as a demo leave-behind for GE Vernova’s commerce intelligence dashboard.
 
-# Demo Walkthrough Script
+1. Deliverable
+- Create a formatted `.docx` document, not a web page.
+- Style it like an executive-ready “demo enhancer”: title page, clear section hierarchy, tables/callouts, polished formatting, and optional screenshots.
+- Position it for business stakeholders, not just technical readers.
 
-I will navigate the published application and perform a guided interactive demo, stepping through each major feature. You can screen-record the preview window on the right while I drive the interactions.
+2. Document goal
+The document will explain:
+- What the demo includes
+- Why each feature matters to business users
+- How the solution improves GE’s commerce operations
+- What measurable outcomes the customer should expect
 
-## Demo Flow (estimated 3-5 minutes of interaction)
+3. Proposed document structure
+A. Cover Page
+- Title
+- Subtitle describing the agentic commerce intelligence demo
+- Date / prepared-for line
 
-### Scene 1 — Dashboard Overview
-- Load the dashboard
-- Pause to show KPI tiles, header, and live status indicator
-- Screenshot the full landing view
+B. Executive Summary
+- 1-page overview of the dashboard
+- What business problem it solves
+- Why it matters now
 
-### Scene 2 — KPI Drill-Down
-- Click on 2-3 KPI tiles (e.g., Revenue, Conversion Rate) to trigger the overlay detail view
-- Close each overlay before moving to the next
+C. Demo Feature Overview
+- Dashboard overview and KPI tiles
+- AI Command Center
+- AI agent layer
+- Streaming alerts
+- Revenue forecasting
+- Scenario simulation
+- Budget optimization
+- Governance and explainability
+- 360° account intelligence
+- Data lineage / architecture
 
-### Scene 3 — Streaming Alerts
-- Wait for alerts to stream in
-- Click "Investigate" on a critical alert (e.g., Cart Recovery or Retention)
-- This should open the corresponding agent chat with context pre-filled
+D. Feature-by-Feature Value Sections
+For each major feature:
+- What the user sees in the demo
+- What it does
+- Business consumer benefit
+- GE operational benefit
+- Example KPI or impact statement
 
-### Scene 4 — Agent Chat Interaction
-- In the opened agent chat, send a follow-up question like "What specific actions should we take?"
-- Wait for the streaming AI response to complete
-- Close the dialog and open a second agent (e.g., Revenue Optimization) manually
-- Send a query like "Show me the top 5 SKUs by margin impact"
+E. Business Outcomes Summary
+- Revenue growth
+- Conversion improvement
+- Cart recovery
+- Catalog productivity
+- Marketing efficiency
+- Retention protection
+- Faster decision-making
+- Better governance / lower risk
 
-### Scene 5 — AI Command Center
-- Scroll to the AI Command Center panel
-- Click a suggested query (e.g., "How is online revenue trending this quarter?")
-- Wait for the streaming response
-- Type a custom query: "What is driving cart abandonment this month?"
-- Wait for the response
+F. Operating Model Impact for GE
+- How commerce, marketing, sales, and service teams benefit
+- How AI shortens time from insight to action
+- How governance keeps humans in control
 
-### Scene 6 — Forecasting Panel
-- Scroll to the forecasting section
-- Toggle between Pessimistic, Baseline, and Optimistic scenarios
-- Screenshot the chart transitions
+G. Suggested Next Steps
+- Pilot scope
+- Priority agents for production
+- Data integration path
+- Demo-to-deployment recommendation
 
-### Scene 7 — Budget Optimization
-- Scroll to the marketing budget simulator
-- Adjust a channel slider (e.g., increase Paid Search budget)
-- Show the projected ROAS update
+4. Content sources from the current demo
+I would base the document directly on the implemented dashboard content, including:
+- KPI metrics and insight narratives from `mockData.ts`
+- 5 AI agents and their business actions
+- streaming alerts and investigate flows
+- command center query examples
+- forecasting/scenario modeling panels
+- budget and attribution simulator
+- governance approval workflows
+- account intelligence panel
+- data lineage architecture visualization
 
-### Scene 8 — Governance Panel
-- Scroll to the governance section
-- Click "Approve" or "Reject" on a pending agent recommendation
-- Show the status change
+5. How the document will be framed
+The write-up will avoid sounding like a feature list only. Each section will translate the demo into:
+- Business-user value: faster answers, better decisions, easier prioritization
+- GE operational value: improved merchandising, pricing, checkout recovery, retention, and marketing allocation
+- Executive value: visibility, control, explainability, measurable ROI
 
-### Scene 9 — Theme Toggle
-- Toggle from light to dark mode (or vice versa)
-- Scroll through the dashboard briefly to show the theme applied across all components
+6. Formatting approach
+- Use a professionally formatted Word layout with branded headings, summary callout boxes, tables, and clean typography
+- Include a few high-value visuals or screenshots from the demo where helpful
+- Use concise executive language with supporting detail underneath
+- Add a summary table mapping “Feature → User Benefit → GE Operational Impact”
 
-### Scene 10 — Wrap-Up
-- Scroll back to the top to show the full dashboard in its final state
-- Take a final screenshot
+7. Recommended emphasis areas
+I would especially highlight:
+- AI Command Center as the executive decision surface
+- Revenue Optimization Agent and Cart Recovery Agent as concrete business-value examples
+- Governance panel as the trust/explainability layer
+- Budget optimization and forecasting as planning tools
+- Data lineage as the credibility/architecture proof point
 
-## What You Need To Do
-- **Start a screen recording** on the preview window (right side) before approving this plan
-- I will drive all the clicks and typing — you just watch and record
-- Each scene will have brief pauses between actions so the recording captures clean transitions
+8. Implementation approach once approved
+- Gather the strongest content from the existing demo screens and data
+- Draft the narrative section-by-section
+- Generate the `.docx` artifact with rich formatting
+- Validate the document rendering
+- QA it by converting to PDF/images and checking layout before delivery
 
-## Limitations
-- This produces a live walkthrough, not a rendered video file — you will need to screen-record externally
-- Network latency to the AI edge function may vary, so streaming responses could be faster or slower than ideal
+9. Output quality target
+The final result should feel like a customer-ready leave-behind that a sales, strategy, or transformation team could send after the demo to reinforce:
+- what was shown
+- why it matters
+- how it creates value for GE’s commerce operations
 
+10. Assumptions
+- The document should be persuasive and presentation-ready
+- It should reflect the current simulated demo, not claim live production integrations
+- It should be optimized for stakeholder review and follow-up conversations after the demo
