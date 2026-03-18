@@ -14,16 +14,78 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      login_audit_log: {
+        Row: {
+          email: string
+          id: string
+          ip_address: string | null
+          location: string | null
+          logged_in_at: string
+          metadata: Json
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          email: string
+          id?: string
+          ip_address?: string | null
+          location?: string | null
+          logged_in_at?: string
+          metadata?: Json
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          email?: string
+          id?: string
+          ip_address?: string | null
+          location?: string | null
+          logged_in_at?: string
+          metadata?: Json
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      current_user_email: { Args: never; Returns: string }
+      ensure_login_report_admin: { Args: never; Returns: boolean }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_techmahindra_user: { Args: never; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "login_report_admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +212,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["login_report_admin"],
+    },
   },
 } as const
