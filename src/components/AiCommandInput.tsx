@@ -73,7 +73,7 @@ const AiCommandInput = () => {
           <div className="space-y-4 py-4">
             <div className="text-center">
               <div className="text-3xl mb-2">⚡</div>
-              <p className="text-xs text-muted-foreground mb-4">Ask anything about GE Vernova eCommerce</p>
+              <p className="text-xs text-muted-foreground mb-4">Ask anything about eCommerce performance</p>
             </div>
             <div className="grid grid-cols-1 gap-1.5">
               {suggestedQueries.map((q) => (

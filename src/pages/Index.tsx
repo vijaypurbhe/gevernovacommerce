@@ -58,7 +58,7 @@ const Index = () => {
             </div>
             <div className="min-w-0">
               <h1 className="text-xs sm:text-sm xl:text-base font-bold text-foreground tracking-tight truncate">
-                GE Vernova — Agentic eCommerce Intelligence
+                Agentic eCommerce Intelligence
               </h1>
               <p className="text-[10px] text-muted-foreground truncate hidden sm:block">
                 Salesforce Commerce Cloud • Google Analytics 4 • Data Cloud • Einstein AI • Marketing Cloud
